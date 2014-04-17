@@ -80,22 +80,34 @@ def phageTUDCalc(phageFile, outfile, k):
 				toWrite += '\t' + str(j)
 			of.write(toWrite+'\n')
 
-#plots comparison histograms between the fastas in filenames
-#legend is titles with names provided in names
+#plots comparison line plot between the lines in dataFile (an output of phageTUDcalc)
+# legend is the first row of dataFile. Title is displayed from title
 # if plot is True, plots the resulting line graph. If false, returns the data structure of binned values.
-def plotHist(filenames, names, k, plot):
+# saves image to savename if plot is true. 
+# plots frequency of log2 deviation. x scaled from -5 to 5
+# if subset is defined, plot only the rows defined in the the list (0 indexed)
+def plotTUD(dataFile, title, plot, saveName=None, subset=None):
+	preNames = []
+	preValues = []
+	with open(dataFile, 'r') as df:
+		line = df.readline().strip()
+		#first line is the names of the kmers
+		line = df.readline().strip()
+		while line != '':
+			preNames.append(line.split('\t')[0])
+			preValues.append([math.log(float(v)+.00000001,2) for v in line.split('\t')[1:]])
+			line = df.readline().strip()
+	#if taking a subset, extract those
 	values = []
-	kmerList = enumerateKmers(k)
-	for f, n in zip(filenames, names):
-		print 'Working with ' + n
-		tud = TUD(f, k, kmerList)
-		toAppend = []
-		for v in tud.values():
-			if v >0:
-				toAppend.append(math.log(v,2))
-			else: toAppend.append(0)
-		values.append(toAppend)
-
+	names =[]
+	if subset != None:
+		for i in subset:
+			if i<len(preValues):
+				values.append(preValues[i])
+				names.append(preNames[i])
+	else: 
+		values = preValues
+		names = preNames
 	#assign to bins
 	bins = [i/4.0 for i in range(-20, 21)]
 	binnedValues = [[0 for i in range(len(bins))] for j in range(len(values))]
@@ -109,9 +121,13 @@ def plotHist(filenames, names, k, plot):
 	if plot:
 		ax = plt.subplot(1,1,1)
 		for i in range(len(values)):
-			plt.plot(bins, binnedValues[i], lw=2, label=names[i])
+			plt.plot(bins, binnedValues[i], lw=1, label=names[i])
 		handles, labels = ax.get_legend_handles_labels()
+		plt.title(title)
+		plt.xlabel('log2(TUD)')
+		plt.ylabel('frequency')
 		plt.legend()
-		plt.show()
+		plt.savefig(saveName, dpi=400)
+		plt.clf()
 	if not plot:
 		return binnedValues
