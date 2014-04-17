@@ -5,6 +5,9 @@ Code, data and figures for the analysis of tetranucleotide usage in mycobacterio
 
 directories
 -----------
+- *data* contains input/output data
+- *src* contains sourcecode
+- *figures* contains pretty pictures
 
 changelog
 ---------
