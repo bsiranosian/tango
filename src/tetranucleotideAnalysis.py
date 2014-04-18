@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from Bio import SeqIO
 import math
 import re
+import numpy as np
 
 ## TOOLS FOR THE ANALYSIS OF TETRANUCLEOTIDE USAGE DEVAIATION IN GENOMES
 ## Designed primarily for phage genomes. May not be the fastest way, but it gets things done!
@@ -135,3 +136,77 @@ def plotTUD(dataFile, title, plot, saveName=None, subset=None):
 		plt.clf()
 	if not plot:
 		return binnedValues
+
+#TDI(): computes the k-mer difference index for a given genome 
+def TDI(filename, windowSize, stepSize, k, kmerList):
+	#construct a dictionary of all kmers
+	kmerDict = dict((key, []) for key in kmerList)
+	kmerDictGenome = dict((key, 0) for key in kmerList)
+	#parse fasta from filename
+	for seq_record in SeqIO.parse(filename, "fasta"):
+		sequence = seq_record.seq.tostring().upper()
+
+	# slide along the genome in windows defined by windowSize with steps defined by stepSize
+	start = 0
+	end = windowSize
+	windowIndex= []
+	while end < len(sequence):
+		if end > len(sequence):
+			end = len(sequence)
+		print str(start) + " - " + str(end)
+		window = sequence[start:end]
+		#record list of windows
+		windowIndex.append([start,end])
+		for kmer in kmerDict.keys():
+			oKmer, eKmer = TDI_kmerCount(kmer, window)
+			# add observed over expected to dictionary
+			if eKmer == 0:
+				print kmer
+				print oKmer
+				kmerDict[kmer].append(1)
+			else:
+				kmerDict[kmer].append(oKmer/eKmer)
+		#slide along the window by stepSize
+		start += stepSize
+		end += stepSize
+	#compute kmers for whole genome.. not sure if we have to do this. 
+	for kmer in kmerDictGenome.keys():
+		oKmer, eKmer = TDI_kmerCount(kmer, sequence)
+		# add observed over expected to dictionary
+		kmerDictGenome[kmer]=oKmer/eKmer
+
+	# compute tetranucleotide differences for each window. 
+	differences = []
+	for w in range(len(windowIndex)):
+		# sum differences over all kmers
+		sumD = 0
+		for k, v in kmerDict.items():
+			sumD += abs(kmerDictGenome[k] - v[w])
+		differences.append(sumD)
+
+	# compute Z-score   Z=(x-mu)/sigma
+	Zscores = []
+	mu = np.mean(differences)
+	sigma = np.std(differences)
+	for w in range(len(windowIndex)):
+		Zscores.append((differences[w] - mu)/sigma)
+
+	# PLOT SHIT
+	xaxis = [x for x,y in windowIndex]
+	plt.plot(xaxis, Zscores, lw=1)
+	plt.show()
+	return [xaxis,Zscores]
+
+#helper function to count observed and expected kmers in a given window.
+# takes in a kmer and window, both strings. Normalizes with markov chain method. 
+def TDI_kmerCount(kmer, window):
+	#observed count in window
+	reg =  r'(?=('+kmer+'))'
+	oKmer = float(len(re.findall(reg, window)))
+	#expected count in sequence done with markov chain analysis? Different than TUD calculation. 
+	#ratio compared to the subwords. 
+	reg1 = r'(?=('+kmer[1:]+'))'
+	reg2 = r'(?=('+kmer[:len(kmer)-1]+'))'
+	reg3 = r'(?=('+kmer[1:len(kmer)-1]+'))'
+	eKmer = (len(window)*(float(len(re.findall(reg1, window))))) *(len(window)*(float(len(re.findall(reg2, window))))) / (len(window)*(float(len(re.findall(reg3, window)))))
+	return (oKmer, eKmer)

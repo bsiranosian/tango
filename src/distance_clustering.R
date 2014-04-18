@@ -2,8 +2,8 @@
 tud <- as.matrix(read.table('~/GitHub/tango/src/hatful60TUD.tsv'))
 d <- dist(tud, method='euclidean',)
 # try different clustering methods
-fit1 <- hclust(d,method='ward')
-fit2 <- hclust(d*d,method='ward')
+fit1 <- hclust(d,method='ward.D')
+fit2 <- hclust(d,method='ward.D2')
 fit3 <- hclust(d,method='complete')
 fit4 <- hclust(d,method='single')
 par(mfrow=c(2,2))
@@ -12,3 +12,7 @@ plot(fit2)
 plot(fit3)
 plot(fit4)
 
+# working with ape for tree building? 
+library(ape)
+njtree <- nj(d)
+  
