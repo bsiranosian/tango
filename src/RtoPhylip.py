@@ -39,7 +39,7 @@ def main(argv):
       sys.exit(2)
    for opt, arg in opts:
       if opt == '-h':
-         print('RtoPhylip.py -i inputfile')
+         print('RtoPhylip.py -i inputPath -o outputPath')
          sys.exit()
       elif opt in ("-i", "--ifile"):
          inputfile = arg
