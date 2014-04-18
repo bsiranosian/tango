@@ -1,10 +1,16 @@
-import csv, sys, getopt, json
+import csv
+import sys
+import getopt
+import json
 
-#Given a .tsv file outputted by R, this script processes it into a textfile readable by Phylip
-#Syntax is RtoPhylip.py -i inputFile 
+#Given a .tsv file outputted by R, this script processes it into a textfile
+#readable by Phylip
+#Syntax is RtoPhylip.py -i inputFile
 
 #the number of digits to export in matrix values
 DIGITS = 16
+#Specify disallowed characters and what to replace them with here
+DISALLOWEDCHARS = {'(':'{', ')':'}', ':':'-', ';':'&', '[':'{', ']':'}'}
 
 def openTSV(filename):
     #import the tsv
@@ -14,11 +20,19 @@ def openTSV(filename):
         #convert into a two dimensional list
         return list(dataReader)
 
+#replaces all chars in text that match a dic key with the dic value
+def replace_all(text, dic):
+    for i, j in dic.items():
+        text = text.replace(i, j)
+    return text
+
+
 def process(matrix):
     #do ridiculous text preprocessing
+
     for row in matrix[1:]:
         #clip and pad names to 10 chars
-        name = row[0]
+        name = replace_all(row[0],DISALLOWEDCHARS)        
         row[0] = name[0:10].ljust(10)
         for i in range(1,len(row)):
             row[i] = row[i][0:DIGITS].zfill(DIGITS)
