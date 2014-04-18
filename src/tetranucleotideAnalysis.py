@@ -75,7 +75,7 @@ def phageTUDCalc(phageFile, outfile, k):
 		#get TUD data for each phage
 		for phage in phages:
 			name = phage[0]
-			print 'working with ' + name
+			print('working with ' + name)
 			fname = phage[1]
 			tud = TUD(fname, k, kmerList)
 			#write each result to file
