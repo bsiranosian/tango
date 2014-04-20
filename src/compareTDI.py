@@ -8,7 +8,7 @@ parser.add_argument("title", action="store", metavar="title", help="The title fo
 parser.add_argument("--xScale", action="store", metavar="xScale", default="False", help="Set to True to scale the x axis of the plot to relative genome position.")
 parser.add_argument("--subset", action="store", metavar="subset", default="False", help="set to True to plot only the regions defined in the input file. If True, each line must have integers in fields 3 and 4 that represent the genomic region of each phage to compare")
 parser.add_argument("--windowSize", action="store", metavar="windowSize", default="5000", help="The size of the window to compute TDI within. Default of 5000bp is used in Pride et. al 2006")
-parser.add_argument("--stepSize", action="store", metavar="stepSize", default="5000", help="How many bases to move the window along the genome at each iteration. Default of 1000bp is used in Pride et. al 2006")
+parser.add_argument("--stepSize", action="store", metavar="stepSize", default="1000", help="How many bases to move the window along the genome at each iteration. Default of 1000bp is used in Pride et. al 2006")
 parser.add_argument("--k", action="store", metavar="k", default="4", help="Can also use this to compute 2,3,5-mers, etc. UNTESTED!")
 args=parser.parse_args()
 
@@ -56,11 +56,13 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 	if subset:
 		for fname, name, subset in zip(fnames, named, subsets):
 			print "Computing for " + name
-			data.append(TDI(fname, windowSize, stepSize, k, kmerList, subset=subset))
+			d = TDI(fname, windowSize, stepSize, k, kmerList, subset=subset)
+			data.append(d)
 	else:
 		for fname, name in zip(fnames, names):
 			print "Computing for " + name
-			data.append(TDI(fname, windowSize, stepSize, k, kmerList))
+			d = TDI(fname, windowSize, stepSize, k, kmerList)
+			data.append(d)
 
 	#if xScale, rescale axes and plot on genome position scale
 	if xScale:

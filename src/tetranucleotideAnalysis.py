@@ -182,7 +182,6 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False):
 		oKmer, eKmer = TDI_kmerCount(kmer, sequence)
 		# add observed over expected to dictionary
 		kmerDictGenome[kmer]=oKmer/eKmer
-
 	# compute tetranucleotide differences for each window. 
 	differences = []
 	for w in range(len(windowIndex)):
@@ -191,7 +190,6 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False):
 		for k, v in kmerDict.items():
 			sumD += abs(kmerDictGenome[k] - v[w])
 		differences.append(sumD)
-
 	# compute Z-score   Z=(x-mu)/sigma
 	Zscores = []
 	mu = np.mean(differences)
@@ -219,5 +217,10 @@ def TDI_kmerCount(kmer, window):
 	reg1 = r'(?=('+kmer[1:]+'))'
 	reg2 = r'(?=('+kmer[:len(kmer)-1]+'))'
 	reg3 = r'(?=('+kmer[1:len(kmer)-1]+'))'
-	eKmer = (len(window)*(float(len(re.findall(reg1, window))))) *(len(window)*(float(len(re.findall(reg2, window))))) / (len(window)*(float(len(re.findall(reg3, window)))))
+	#print "window: " + str(len(window))
+	eKmer = (float(len(re.findall(reg1, window)))) * (float(len(re.findall(reg2, window)))) / (float(len(re.findall(reg3, window))))
+	#print (float(len(re.findall(reg1, window))))
+	#print (float(len(re.findall(reg2, window)))) 
+	#print (float(len(re.findall(reg3, window)))) 
+	#print kmer + ": o: " +str(oKmer) + " e: "+str(eKmer)
 	return (oKmer, eKmer)
