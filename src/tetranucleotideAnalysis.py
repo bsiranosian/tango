@@ -137,14 +137,22 @@ def plotTUD(dataFile, title, plot, saveName=None, subset=None):
 	if not plot:
 		return binnedValues
 
-#TDI(): computes the k-mer difference index for a given genome 
-def TDI(filename, windowSize, stepSize, k, kmerList):
+#TDI(): computes the k-mer difference index for a given genome. Takes in a filename, size of window to compute TDI in, 
+# step size to move along the genome by, k, a list of kmers of length k, and a boolean plot. 
+# if plot is true, plot the resulting figure using matplotlib. 
+# always returns a list of window positions and Zscores
+# if subset is defined, only return information about the sequence between the two positions. 
+def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False):
 	#construct a dictionary of all kmers
 	kmerDict = dict((key, []) for key in kmerList)
 	kmerDictGenome = dict((key, 0) for key in kmerList)
 	#parse fasta from filename
 	for seq_record in SeqIO.parse(filename, "fasta"):
 		sequence = seq_record.seq.tostring().upper()
+
+	# pick out part defined in subset
+	if subset != None:
+		sequence = sequence[subset[0]:subset[1]]
 
 	# slide along the genome in windows defined by windowSize with steps defined by stepSize
 	start = 0
@@ -153,7 +161,7 @@ def TDI(filename, windowSize, stepSize, k, kmerList):
 	while end < len(sequence):
 		if end > len(sequence):
 			end = len(sequence)
-		print str(start) + " - " + str(end)
+		#print str(start) + " - " + str(end)
 		window = sequence[start:end]
 		#record list of windows
 		windowIndex.append([start,end])
@@ -161,8 +169,8 @@ def TDI(filename, windowSize, stepSize, k, kmerList):
 			oKmer, eKmer = TDI_kmerCount(kmer, window)
 			# add observed over expected to dictionary
 			if eKmer == 0:
-				print kmer
-				print oKmer
+				#print kmer
+				#print oKmer
 				kmerDict[kmer].append(1)
 			else:
 				kmerDict[kmer].append(oKmer/eKmer)
@@ -193,8 +201,11 @@ def TDI(filename, windowSize, stepSize, k, kmerList):
 
 	# PLOT SHIT
 	xaxis = [x for x,y in windowIndex]
-	plt.plot(xaxis, Zscores, lw=1)
-	plt.show()
+	if plot:
+		plt.plot(xaxis, Zscores, lw=1)
+		# ADD INFORMATION TO AXES, ET
+		plt.show()
+
 	return [xaxis,Zscores]
 
 #helper function to count observed and expected kmers in a given window.
