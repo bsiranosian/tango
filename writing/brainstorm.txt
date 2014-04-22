@@ -1,0 +1,26 @@
+So, we need to throw together an abstract that adequately summarizes our work. It should be around 500 words. 
+
+Title: Alignment-free methods to infer evolutionary relationships and cluster mycobacteriophages?
+
+The way I see it, we have results from three main categories
+tetranucleotide usage deviation(TUD)
+	- phage within the same cluster show very similar TDI signitures 
+	- clustering on TDI distance accurately reproduces clusters but not inter-cluster relationships
+		- k-means clustering with 10-fold cross validation accurately clusters 97% 
+		- Most incorrectly classified are singleton
+		- Hierarchical clustering groups related phage closely, and sometimes near related clusters
+	- TODO: compare TDI distance to alignment similarity (pairwis alignment is running for 60 hatful phage)
+			different methods of clustering, improve model, regression, decision tree, etc
+			MDS/PCA
+			3-mers and 5-mers
+
+tetranucleotide difference index (TDI)
+	- shows trend along genome. similar phage show similar signals. 
+	- TODO: find examples of horizontal transfer, look for similarity in TDI plot
+			Normalize to first order markov insted of 3-mers
+			3-mers and 5-mers
+			can we use this for host-parisite coevolution?
+
+other alignment-free methods (D2, D*2, T, R)
+	- Need to check these out. shows huge potential for identifying horizontal gene transfer. 
+
