@@ -1,3 +1,10 @@
+# CODE FOR EDDIE
+tud <- as.matrix(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))
+d <- dist(tud, method='euclidean',)
+fit1 <- hclust(d,method='ward.D')
+plot(fit1)
+
+
 # clustering on TUD distance 
 tud <- as.matrix(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))
 d <- dist(tud, method='euclidean',)
