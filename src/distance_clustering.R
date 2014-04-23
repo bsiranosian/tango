@@ -4,6 +4,11 @@ d <- dist(tud, method='euclidean',)
 fit1 <- hclust(d,method='ward.D')
 plot(fit1)
 
+#clustering 1-similarity matrix from pairwise alignment
+aln <- as.matrix(read.table('~/GitHub/tango/data/pairwise_alignment_distance_60.tsv'))
+d <- dist(aln, method='euclidean')
+fit1 <- hclust(d,method='ward.D')
+plot(fit1)
 
 # clustering on TUD distance 
 tud <- as.matrix(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))

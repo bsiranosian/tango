@@ -30,7 +30,7 @@ Myrna(C2)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\Myrna.fast
 Adjutor(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\Adjutor.fasta
 Butterscotch(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\Butterscotch.fasta
 Gumball(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\Gumball.fasta
-P-lot(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\PLot.fasta
+Plot(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\PLot.fasta
 PBI1(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\PBI1.fasta
 Troll4(D)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\Troll4.fasta
 244(E)	C:\\Users\\Admin\\Documents\\GitHub\\balboa\\phages\\fasta\\244.fasta
