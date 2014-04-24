@@ -54,6 +54,65 @@ def TUD(filename, k, kmerList):
 		kmerDict[kmer] =oKmer/eKmer
 	return kmerDict
 
+#similar to TUD(), but accepts a string instead of a filename
+def TUDFromString(sequence, k, kmerList):
+	kmerDict = dict((key, 0 ) for key in kmerList)
+	#for normalization need number of each nucleotide
+	eA = sequence.count('A')/float(len(sequence))
+	eT = sequence.count('T')/float(len(sequence))
+	eC = sequence.count('C')/float(len(sequence))
+	eG = sequence.count('G')/float(len(sequence))
+	#calculate TUD for each kmer
+	for kmer in kmerDict.keys():
+		#print 'calculating for ' + kmer
+		#observed count in genome
+		reg =  r'(?=('+kmer+'))'
+		oKmer = float(len(re.findall(reg, sequence)))
+		#print 'observed: ' + str(oKmer)
+		#expected count in sequence
+		#number of each letter in kmer 
+		kA = kmer.count('A')
+		kT = kmer.count('T')
+		kC = kmer.count('C')
+		kG = kmer.count('G')
+		eKmer = (math.pow(eA,kA)*math.pow(eT,kT)*math.pow(eC,kC)*math.pow(eG,kG))*len(sequence)
+		#frequency is observed/expected
+		kmerDict[kmer] =oKmer/eKmer
+	return kmerDict
+
+#similar to phageTUDCalc, except uses BioPython to parse through a single FASTA file with
+#a large number of mycobacteria 
+#modified to produce CSV files to reduce R processing errors
+def mycobacteriaTUDCalc(filename, outfile, k):
+
+	with open(outfile, 'w') as of:
+		kmerList = enumerateKmers(4)
+		wroteKmersAtTop = False
+
+		for seq_record in SeqIO.parse(filename, "fasta"):
+			sequence = seq_record.seq.tostring().upper()
+			name = seq_record.description.split("| ")[1].replace(" ", "_").replace(',', '-')
+
+			tud = TUDFromString(sequence, k, kmerList)
+
+			#if it's the first time, write kmers at the top of the file
+			#else, skip over
+			if not wroteKmersAtTop:
+				kmers = ''
+				for kmer in tud.keys():
+					kmers += '\t' + kmer
+				of.write(kmers+'\n')
+				wroteKmersAtTop = True
+
+			print('working with ' + name)
+			tud = TUDFromString(sequence, k, kmerList)
+			#write each result to file
+			toWrite = name
+			for j in tud.values():
+				toWrite += '\t' + str(j)
+			of.write(toWrite+'\n')
+
+
 #open a list of tab separated phage names (col1) and filenames (col2), one per line. 
 #calculates TUD for each and writes results to outfile. 
 def phageTUDCalc(phageFile, outfile, k):
