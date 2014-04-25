@@ -125,7 +125,7 @@ def phageTUDCalc(phageFile, outfile, k):
 			line=pf.readline()
 
 	with open(outfile, 'w') as of:
-		kmerList = enumerateKmers(4)
+		kmerList = enumerateKmers(k)
 		#get one tud, write kmers at top
 		oneTud = TUD(phages[0][1], k, kmerList)
 		kmers = ''
