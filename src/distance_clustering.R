@@ -11,7 +11,7 @@ fit1 <- hclust(d,method='ward.D')
 plot(fit1)
 
 # clustering on TUD distance 
-tud <- as.matrix(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))
+tud <- as.matrix(read.table('~/GitHub/tango/data/all_phages_TUD_3.tsv'))
 d <- dist(tud, method='euclidean',)
 # try different clustering methods
 fit1 <- hclust(d,method='ward.D')
