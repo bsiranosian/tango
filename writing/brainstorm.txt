@@ -1,10 +1,10 @@
 So, we need to throw together an abstract that adequately summarizes our work. It should be around 500 words. 
 
-Title: Alignment-free methods to infer evolutionary relationships and cluster mycobacteriophages?
+Title: Alignment-free sequence analysis methods to cluster mycobacteriophages and infer evolutionary relationships
 
 The way I see it, we have results from three main categories
 tetranucleotide usage deviation(TUD)
-	- phage within the same cluster show very similar TDI signitures 
+	- phage within the same cluster show very similar TUD signitures 
 	- clustering on TDI distance accurately reproduces clusters but not inter-cluster relationships
 		- k-means clustering with 10-fold cross validation accurately clusters 97% 
 		- Most incorrectly classified are singleton
@@ -24,3 +24,9 @@ tetranucleotide difference index (TDI)
 other alignment-free methods (D2, D*2, T, R)
 	- Need to check these out. shows huge potential for identifying horizontal gene transfer. 
 
+
+###########################
+#######  ABSTRACT   #######
+###########################
+
+Mycobacteriophages are currently placed into clusters using methods the depend on sequence alignment and knowledge of gene position and homology. We used oligonucleotide usage deviation, the ratio of observed k-mers to the expected number under a zero order markov model, to infer relationships between phage genomes. Pairwise distances were calculated based on this statistic for all 663 mycobacteriophages currently on phagesdb. Several distance metrics 

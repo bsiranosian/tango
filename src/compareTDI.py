@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser(description="This script produces a Tetranucleo
 parser.add_argument("nameFile", action="store", metavar="nameFile", help="The file name of the tab delimited file defining phage information")
 parser.add_argument("saveName", action="store", metavar="saveName", help="The file to save the resulting image to.")
 parser.add_argument("title", action="store", metavar="title", help="The title for the resulting plot.")
+parser.add_argument("--maxNum", action="store", metavar="maxnum", default="10", help="maximum number of phage to plot on the same figure. first maxnum of input file will be chosen. default: 10")
 parser.add_argument("--xScale", action="store", metavar="xScale", default="False", help="Set to True to scale the x axis of the plot to relative genome position.")
 parser.add_argument("--subset", action="store", metavar="subset", default="False", help="set to True to plot only the regions defined in the input file. If True, each line must have integers in fields 3 and 4 that represent the genomic region of each phage to compare")
 parser.add_argument("--windowSize", action="store", metavar="windowSize", default="5000", help="The size of the window to compute TDI within. Default of 5000bp is used in Pride et. al 2006")
@@ -15,6 +16,7 @@ args=parser.parse_args()
 nameFile=args.nameFile
 saveName=args.saveName
 title=args.title
+maxNum=args.maxNum
 if args.xScale == "True": xScale=True
 else: xScale=False
 if args.subset == "True": subset=True
@@ -33,7 +35,8 @@ from tetranucleotideAnalysis import *
 # if subset is true, each sequence is shortened to the positions defined in the final two fields of the input.
 # other arguments (windowSize, stepSize, k) are passed to the TDI function. 
 # plot titled with title. saves the resulting plot to saveName
-def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveName):
+# only first maxNum lines are plotted. the first 10 phage defined in the input file are plotted by default. 
+def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveName, maxNum):
 	# read information in nameFile
 	names = []
 	fnames = []
@@ -72,8 +75,12 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 				scaledX.append(data[i][0][j] / float(data[i][0][len(data[i][0])-1]))
 			data[i][0] = scaledX
 	ax = plt.subplot(1,1,1)
+
+	plotNum=0
 	for [xaxis, Zscores],name in zip(data, names):
-		plt.plot(xaxis, Zscores, lw=1, label=name)
+		if plotNum < maxNum:
+			plt.plot(xaxis, Zscores, lw=1, label=name)
+			plotNum+=1
 	handles, labels = ax.get_legend_handles_labels()
 	plt.title(title)
 	plt.xlabel('genomic position')
