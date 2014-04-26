@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from Bio import SeqIO
 import math
-import re
+import regex as re
 import numpy as np
 
 ## TOOLS FOR THE ANALYSIS OF TETRANUCLEOTIDE USAGE DEVAIATION IN GENOMES
@@ -41,7 +41,7 @@ def TUD(filename, k, kmerList):
 		#print 'calculating for ' + kmer
 		#observed count in genome
 		reg =  r'(?=('+kmer+'))'
-		oKmer = float(len(re.findall(reg, sequence)))
+		oKmer = float(len(re.findall(reg, sequence, overlapped=True)))
 		#print 'observed: ' + str(oKmer)
 		#expected count in sequence
 		#number of each letter in kmer 
@@ -67,7 +67,7 @@ def TUDFromString(sequence, k, kmerList):
 		#print 'calculating for ' + kmer
 		#observed count in genome
 		reg =  r'(?=('+kmer+'))'
-		oKmer = float(len(re.findall(reg, sequence)))
+		oKmer = float(len(re.findall(reg, sequence,overlapped=True))))
 		#print 'observed: ' + str(oKmer)
 		#expected count in sequence
 		#number of each letter in kmer 
@@ -270,14 +270,14 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False):
 def TDI_kmerCount(kmer, window):
 	#observed count in window
 	reg =  r'(?=('+kmer+'))'
-	oKmer = float(len(re.findall(reg, window)))
+	oKmer = float(len(re.findall(reg, window,overlapped=True))))
 	#expected count in sequence done with markov chain analysis? Different than TUD calculation. 
 	#ratio compared to the subwords. 
 	reg1 = r'(?=('+kmer[1:]+'))'
 	reg2 = r'(?=('+kmer[:len(kmer)-1]+'))'
 	reg3 = r'(?=('+kmer[1:len(kmer)-1]+'))'
 	#print "window: " + str(len(window))
-	eKmer = (float(len(re.findall(reg1, window)))) * (float(len(re.findall(reg2, window)))) / (float(len(re.findall(reg3, window))))
+	eKmer = (float(len(re.findall(reg1, window,overlapped=True))))) * (float(len(re.findall(reg2, window,overlapped=True))))) / (float(len(re.findall(reg3, window,overlapped=True)))))
 	#print (float(len(re.findall(reg1, window))))
 	#print (float(len(re.findall(reg2, window)))) 
 	#print (float(len(re.findall(reg3, window)))) 
