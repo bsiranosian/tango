@@ -16,7 +16,7 @@ args=parser.parse_args()
 nameFile=args.nameFile
 saveName=args.saveName
 title=args.title
-maxNum=args.maxNum
+maxNum=int(args.maxNum)
 if args.xScale == "True": xScale=True
 else: xScale=False
 if args.subset == "True": subset=True
@@ -27,6 +27,9 @@ k=int(args.k)
 
 
 from tetranucleotideAnalysis import *
+import matplotlib.cm as mplcm
+import matplotlib.colors as colors
+import numpy as np
 #compareTDI(): plots multiple tetranucleotide difference index signals on the same plot. 
 # takes as input a tab delimited file of phage info with 2 necessary fields and 2 optional fields:
 # 	name 	fastaPath	subsetStart	subsetEnd
@@ -55,18 +58,23 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 			line = nf.readline().strip().split('\t')
 	# compute for each defined phage
 	data = []
-	kmerList = enumerateKmers(k)
+	kmerList = enumerateKmers(k)	
 	if subset:
+		calcNum=0
 		for fname, name, subset in zip(fnames, named, subsets):
-			print "Computing for " + name
-			d = TDI(fname, windowSize, stepSize, k, kmerList, subset=subset)
-			data.append(d)
+			if calcNum<maxNum:
+				print "Computing for " + name
+				d = TDI(fname, windowSize, stepSize, k, kmerList, subset=subset)
+				data.append(d)
+			calcNum+=1
 	else:
+		calcNum=0
 		for fname, name in zip(fnames, names):
-			print "Computing for " + name
-			d = TDI(fname, windowSize, stepSize, k, kmerList)
-			data.append(d)
-
+			if calcNum<maxNum:
+				print "Computing for " + name
+				d = TDI(fname, windowSize, stepSize, k, kmerList)
+				data.append(d)
+			calcNum+=1
 	#if xScale, rescale axes and plot on genome position scale
 	if xScale:
 		for i in range(len(data)):
@@ -74,22 +82,30 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 			for j in range(len(data[i][0])):
 				scaledX.append(data[i][0][j] / float(data[i][0][len(data[i][0])-1]))
 			data[i][0] = scaledX
+	
 	ax = plt.subplot(1,1,1)
+	# Code from SO to make colors distinguishable
+	NUM_COLORS = maxNum
+	cm = plt.get_cmap('gist_rainbow')
+	cNorm  = colors.Normalize(vmin=0, vmax=NUM_COLORS-1)
+	scalarMap = mplcm.ScalarMappable(norm=cNorm, cmap=cm)
+	ax.set_color_cycle([scalarMap.to_rgba(i) for i in range(NUM_COLORS)])
 
-	plotNum=0
+	i = 0
 	for [xaxis, Zscores],name in zip(data, names):
-		if plotNum < maxNum:
-			plt.plot(xaxis, Zscores, lw=1, label=name)
-			plotNum+=1
+		color = cm(1.*i/NUM_COLORS)
+		plt.plot(xaxis, Zscores, lw=1, label=name)
+		i+=1
+
 	handles, labels = ax.get_legend_handles_labels()
 	plt.title(title)
 	plt.xlabel('genomic position')
 	plt.ylabel('TDI Z-score')
-	plt.legend()
+	plt.legend(prop={'size':5})
 	plt.savefig(saveName, dpi=300)
 	plt.clf()
 	print "Plot \' " + title+ "\' saved to " + saveName 
 	print "Done  :)"
 
 # function call
-compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName)
+compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName,maxNum)

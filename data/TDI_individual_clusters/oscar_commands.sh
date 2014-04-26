@@ -1,16 +1,14 @@
-python compareTDI.py sequenced_phage_map_A1.txt ../../figures/TDI_individual_clusters/TDI_A1 "TDI first 10 phage of A1"
-python compareTDI.py sequenced_phage_map_A10.txt ../../figures/TDI_individual_clusters/TDI_A10 "TDI first 10 phage of A10"
-python compareTDI.py sequenced_phage_map_A11.txt ../../figures/TDI_individual_clusters/TDI_A11 "TDI first 10 phage of A11"
-python compareTDI.py sequenced_phage_map_A2.txt ../../figures/TDI_individual_clusters/TDI_A2 "TDI first 10 phage of A2"
-python compareTDI.py sequenced_phage_map_A3.txt ../../figures/TDI_individual_clusters/TDI_A3 "TDI first 10 phage of A3"
-python compareTDI.py sequenced_phage_map_A4.txt ../../figures/TDI_individual_clusters/TDI_A4 "TDI first 10 phage of A4"
-python compareTDI.py sequenced_phage_map_A5.txt ../../figures/TDI_individual_clusters/TDI_A5 "TDI first 10 phage of A5"
-python compareTDI.py sequenced_phage_map_A6.txt ../../figures/TDI_individual_clusters/TDI_A6 "TDI first 10 phage of A6"
-python compareTDI.py sequenced_phage_map_A7.txt ../../figures/TDI_individual_clusters/TDI_A7 "TDI first 10 phage of A7"
-python compareTDI.py sequenced_phage_map_A8.txt ../../figures/TDI_individual_clusters/TDI_A8 "TDI first 10 phage of A8"
-python compareTDI.py sequenced_phage_map_A9.txt ../../figures/TDI_individual_clusters/TDI_A9 "TDI first 10 phage of A9"
-python compareTDI.py sequenced_phage_map_B1.txt ../../figures/TDI_individual_clusters/TDI_B1 "TDI first 10 phage of B1"
-python compareTDI.py sequenced_phage_map_B2.txt ../../figures/TDI_individual_clusters/TDI_B2 "TDI first 10 phage of B2"
+#!/bin/bash
+
+#SBATCH --time=6:00:00
+#SBATCH -n 1
+#SBATCH --qos=normal
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH -J all_phage_TDI
+#SBATCH -o all_phage_TDI.out
+#SBATCH -e all_phage_TDI.err
+
 python compareTDI.py sequenced_phage_map_B3.txt ../../figures/TDI_individual_clusters/TDI_B3 "TDI first 10 phage of B3"
 python compareTDI.py sequenced_phage_map_B4.txt ../../figures/TDI_individual_clusters/TDI_B4 "TDI first 10 phage of B4"
 python compareTDI.py sequenced_phage_map_B5.txt ../../figures/TDI_individual_clusters/TDI_B5 "TDI first 10 phage of B5"
@@ -19,30 +17,3 @@ python compareTDI.py sequenced_phage_map_C2.txt ../../figures/TDI_individual_clu
 python compareTDI.py sequenced_phage_map_D1.txt ../../figures/TDI_individual_clusters/TDI_D1 "TDI first 10 phage of D1"
 python compareTDI.py sequenced_phage_map_D2.txt ../../figures/TDI_individual_clusters/TDI_D2 "TDI first 10 phage of D2"
 python compareTDI.py sequenced_phage_map_E.txt ../../figures/TDI_individual_clusters/TDI_E "TDI first 10 phage of E"
-python compareTDI.py sequenced_phage_map_F1.txt ../../figures/TDI_individual_clusters/TDI_F1 "TDI first 10 phage of F1"
-python compareTDI.py sequenced_phage_map_F2.txt ../../figures/TDI_individual_clusters/TDI_F2 "TDI first 10 phage of F2"
-python compareTDI.py sequenced_phage_map_F3.txt ../../figures/TDI_individual_clusters/TDI_F3 "TDI first 10 phage of F3"
-python compareTDI.py sequenced_phage_map_G.txt ../../figures/TDI_individual_clusters/TDI_G "TDI first 10 phage of G"
-python compareTDI.py sequenced_phage_map_H1.txt ../../figures/TDI_individual_clusters/TDI_H1 "TDI first 10 phage of H1"
-python compareTDI.py sequenced_phage_map_H2.txt ../../figures/TDI_individual_clusters/TDI_H2 "TDI first 10 phage of H2"
-python compareTDI.py sequenced_phage_map_I1.txt ../../figures/TDI_individual_clusters/TDI_I1 "TDI first 10 phage of I1"
-python compareTDI.py sequenced_phage_map_I2.txt ../../figures/TDI_individual_clusters/TDI_I2 "TDI first 10 phage of I2"
-python compareTDI.py sequenced_phage_map_J.txt ../../figures/TDI_individual_clusters/TDI_J "TDI first 10 phage of J"
-python compareTDI.py sequenced_phage_map_K1.txt ../../figures/TDI_individual_clusters/TDI_K1 "TDI first 10 phage of K1"
-python compareTDI.py sequenced_phage_map_K2.txt ../../figures/TDI_individual_clusters/TDI_K2 "TDI first 10 phage of K2"
-python compareTDI.py sequenced_phage_map_K3.txt ../../figures/TDI_individual_clusters/TDI_K3 "TDI first 10 phage of K3"
-python compareTDI.py sequenced_phage_map_K4.txt ../../figures/TDI_individual_clusters/TDI_K4 "TDI first 10 phage of K4"
-python compareTDI.py sequenced_phage_map_K5.txt ../../figures/TDI_individual_clusters/TDI_K5 "TDI first 10 phage of K5"
-python compareTDI.py sequenced_phage_map_L1.txt ../../figures/TDI_individual_clusters/TDI_L1 "TDI first 10 phage of L1"
-python compareTDI.py sequenced_phage_map_L2.txt ../../figures/TDI_individual_clusters/TDI_L2 "TDI first 10 phage of L2"
-python compareTDI.py sequenced_phage_map_L3.txt ../../figures/TDI_individual_clusters/TDI_L3 "TDI first 10 phage of L3"
-python compareTDI.py sequenced_phage_map_M1.txt ../../figures/TDI_individual_clusters/TDI_M1 "TDI first 10 phage of M1"
-python compareTDI.py sequenced_phage_map_M2.txt ../../figures/TDI_individual_clusters/TDI_M2 "TDI first 10 phage of M2"
-python compareTDI.py sequenced_phage_map_N.txt ../../figures/TDI_individual_clusters/TDI_N "TDI first 10 phage of N"
-python compareTDI.py sequenced_phage_map_O.txt ../../figures/TDI_individual_clusters/TDI_O "TDI first 10 phage of O"
-python compareTDI.py sequenced_phage_map_P.txt ../../figures/TDI_individual_clusters/TDI_P "TDI first 10 phage of P"
-python compareTDI.py sequenced_phage_map_Q.txt ../../figures/TDI_individual_clusters/TDI_Q "TDI first 10 phage of Q"
-python compareTDI.py sequenced_phage_map_R.txt ../../figures/TDI_individual_clusters/TDI_R "TDI first 10 phage of R"
-python compareTDI.py sequenced_phage_map_S.txt ../../figures/TDI_individual_clusters/TDI_S "TDI first 10 phage of S"
-python compareTDI.py sequenced_phage_map_Singleton.txt ../../figures/TDI_individual_clusters/TDI_Singleton "TDI first 10 phage of Singleton"
-python compareTDI.py sequenced_phage_map_T.txt ../../figures/TDI_individual_clusters/TDI_T "TDI first 10 phage of T"

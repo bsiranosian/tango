@@ -1,0 +1,92 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3852656
+##  Job Name : all_phage_TDI2
+##  Nodelist : node260
+##      CPUs : 1
+##  Mem/Node : 32768 MB
+## Directory : /gpfs/home/bsiranos/projects/tango/data/TDI_individual_clusters
+##   Started : Sat Apr 26 15:37:12 EDT 2014
+###############################################################################
+Computing for Ardmore(F1)
+Computing for Batiatus(F1)
+Computing for Bipolar(F1)
+Computing for Bobi(F1)
+Computing for Boomer(F1)
+Computing for Brocalys(F1)
+Computing for Bubbles123(F1)
+Computing for BuzzLyseyear(F1)
+Computing for Cabrinians(F1)
+Computing for CaptainTrips(F1)
+Plot ' TDI first 10 phage of F1' saved to ../../figures/TDI_individual_clusters/TDI_F1
+Done  :)
+Computing for Avani(F2)
+Computing for Che9d(F2)
+Computing for Jabbawokkie(F2)
+Computing for Yoshi(F2)
+Computing for Zapner(F2)
+Plot ' TDI first 10 phage of F2' saved to ../../figures/TDI_individual_clusters/TDI_F2
+Done  :)
+Computing for Squirty(F3)
+Plot ' TDI first 10 phage of F3' saved to ../../figures/TDI_individual_clusters/TDI_F3
+Done  :)
+Computing for Angel(G)
+Computing for Annihilator(G)
+Computing for Avrafan(G)
+Computing for BPs(G)
+Computing for BQuat(G)
+Computing for BruceB(G)
+Computing for Cherrybomb426(G)
+Computing for Frosty24(G)
+Computing for Gomashi(G)
+Computing for Halo(G)
+Plot ' TDI first 10 phage of G' saved to ../../figures/TDI_individual_clusters/TDI_G
+Done  :)
+Computing for Damien(H1)
+Computing for Konstantine(H1)
+Computing for Oaker(H1)
+Computing for Predator(H1)
+Plot ' TDI first 10 phage of H1' saved to ../../figures/TDI_individual_clusters/TDI_H1
+Done  :)
+Computing for Barnyard(H2)
+Plot ' TDI first 10 phage of H2' saved to ../../figures/TDI_individual_clusters/TDI_H2
+Done  :)
+Computing for Babsiella(I1)
+Computing for Brujita(I1)
+Computing for Island3(I1)
+Plot ' TDI first 10 phage of I1' saved to ../../figures/TDI_individual_clusters/TDI_I1
+Done  :)
+Computing for Che9c(I2)
+Plot ' TDI first 10 phage of I2' saved to ../../figures/TDI_individual_clusters/TDI_I2
+Done  :)
+Computing for Ariel(J)
+Computing for BAKA(J)
+Computing for Courthouse(J)
+Computing for Duke13(J)
+Computing for EricMillard(J)
+Computing for Halley(J)
+Computing for Klein(J)
+Computing for LittleE(J)
+Computing for Lucky2013(J)
+Computing for MiaZeal(J)
+Plot ' TDI first 10 phage of J' saved to ../../figures/TDI_individual_clusters/TDI_J
+Done  :)
+Computing for Marvin(S)
+Computing for MosMoris(S)
+Plot ' TDI first 10 phage of S' saved to ../../figures/TDI_individual_clusters/TDI_S
+Done  :)
+Computing for Dori(Singleton)
+Computing for DS6A(Singleton)
+Computing for Gaia(Singleton)
+Computing for Jeon(Singleton)
+Computing for MooMoo(Singleton)
+Computing for Muddy(Singleton)
+Computing for Patience(Singleton)
+Computing for Sparky(Singleton)
+Computing for Wildcat(Singleton)
+Plot ' TDI first 10 phage of Singleton' saved to ../../figures/TDI_individual_clusters/TDI_Singleton
+Done  :)
+Computing for Bernal13(T)
+Computing for Mendokysei(T)
+Computing for RonRayGun(T)
+Plot ' TDI first 10 phage of T' saved to ../../figures/TDI_individual_clusters/TDI_T
+Done  :)

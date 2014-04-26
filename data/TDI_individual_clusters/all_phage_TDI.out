@@ -1,0 +1,78 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3852657
+##  Job Name : all_phage_TDI
+##  Nodelist : node261
+##      CPUs : 1
+##  Mem/Node : 32768 MB
+## Directory : /gpfs/home/bsiranos/projects/tango/data/TDI_individual_clusters
+##   Started : Sat Apr 26 15:37:11 EDT 2014
+###############################################################################
+Computing for Akoma(B3)
+Computing for Athena(B3)
+Computing for Audrey(B3)
+Computing for Bernardo(B3)
+Computing for Compostia(B3)
+Computing for Daisy(B3)
+Computing for Gadjet(B3)
+Computing for Heathcliff(B3)
+Computing for Kamiyu(B3)
+Computing for Phaedrus(B3)
+Plot ' TDI first 10 phage of B3' saved to ../../figures/TDI_individual_clusters/TDI_B3
+Done  :)
+Computing for Browncna(B4)
+Computing for ChrisnMich(B4)
+Computing for Cooper(B4)
+Computing for Frederick(B4)
+Computing for JAMaL(B4)
+Computing for KayaCho(B4)
+Computing for Nigel(B4)
+Computing for Stinger(B4)
+Computing for Zemanar(B4)
+Plot ' TDI first 10 phage of B4' saved to ../../figures/TDI_individual_clusters/TDI_B4
+Done  :)
+Computing for Acadian(B5)
+Computing for Phelemich(B5)
+Computing for Reprobate(B5)
+Plot ' TDI first 10 phage of B5' saved to ../../figures/TDI_individual_clusters/TDI_B5
+Done  :)
+Computing for Alice(C1)
+Computing for ArcherS7(C1)
+Computing for Astraea(C1)
+Computing for Ava3(C1)
+Computing for Bangla1971(C1)
+Computing for BeanWater(C1)
+Computing for Breeniome(C1)
+Computing for Bxz1(C1)
+Computing for Cali(C1)
+Computing for Catera(C1)
+Plot ' TDI first 10 phage of C1' saved to ../../figures/TDI_individual_clusters/TDI_C1
+Done  :)
+Computing for Myrna(C2)
+Plot ' TDI first 10 phage of C2' saved to ../../figures/TDI_individual_clusters/TDI_C2
+Done  :)
+Computing for Adjutor(D1)
+Computing for BigMama(D1)
+Computing for Butterscotch(D1)
+Computing for Gumball(D1)
+Computing for Nova(D1)
+Computing for PBI1(D1)
+Computing for PLot(D1)
+Computing for SirHarley(D1)
+Computing for Troll4(D1)
+Plot ' TDI first 10 phage of D1' saved to ../../figures/TDI_individual_clusters/TDI_D1
+Done  :)
+Computing for Hawkeye(D2)
+Plot ' TDI first 10 phage of D2' saved to ../../figures/TDI_individual_clusters/TDI_D2
+Done  :)
+Computing for 244(E)
+Computing for ABCat(E)
+Computing for Bask21(E)
+Computing for Bruin(E)
+Computing for Cactus(E)
+Computing for Cjw1(E)
+Computing for Contagion(E)
+Computing for Czyszczon1(E)
+Computing for DrDrey(E)
+Computing for Dumbo(E)
+Plot ' TDI first 10 phage of E' saved to ../../figures/TDI_individual_clusters/TDI_E
+Done  :)
