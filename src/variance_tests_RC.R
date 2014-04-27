@@ -39,3 +39,6 @@ table(GAAG2)
 qqnorm(tudrc[tudrc[,"cluster"]=="B1",1])
 plot(hist(tudrc[tudrc[,"cluster"]=="B1",1]))
 
+#For each cluster, for each TUD, how many other clusters are in the range of those values
+clusterMaxVals <- t(sapply(levels(cf), function(x) apply(tudrc[tudrc[,"cluster"]==x,1:256],2,max)))
+clusterMinVals <- t(sapply(levels(cf), function(x) apply(tudrc[tudrc[,"cluster"]==x,1:256],2,min)))

@@ -3,7 +3,6 @@ import matplotlib.cm as mplcm
 import matplotlib.colors as colors
 import numpy as np
 
-
 #countMotif(sequence, motif, windowSize, stepSize): counts the occurances of a given motif in windows of windowSize, moving along sequence in intervals of stepSize
 # returns a list of tuple: (position of start of region, occurances of the given motif for region) 
 def countMotif(sequence, motif, windowSize, stepSize):
@@ -39,18 +38,21 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 		for seq_record in SeqIO.parse(fname, "fasta"):
 			sequence = seq_record.seq.tostring().upper()
 
-		## NEW CODE ## 
-		# append reverse complement if RC=True
-		if RC:
-			sequence += reverse_complement(sequence)
+		if not RC:
+			print "Computing for " + name
+			d = countMotif(sequence, motif, windowSize, stepSize)
+			data.append(d)
 
-		print "Computing for " + name
-		d = countMotif(sequence, motif, windowSize, stepSize)
-		data.append(d)
+		## NEW CODE ## 
+		# add data from counting across RC if RC=True
+		if RC:
+			rc = reverse_complement(sequence)
+			f = countMotif(sequence, motif, windowSize, stepSize)
+			r = countMotif(rc, motif, windowSize, stepSize)
+			d = [(a[0],a[1]+b[1]) for a,b in zip(f,r)]
+			data.append(d)
 
 	# get from data into lists across genome
-	
-
 	ax = plt.subplot(1,1,1)
 	# Code from SO to make colors distinguishable
 	NUM_COLORS = maxNum
@@ -100,7 +102,13 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 
 #plot this cool GATC motif for some clusters
 # B3 is extremely elevated. look in comparison to a few others 
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B3.txt' , 'GATC', 1000,900,'GATC frequency in B3 genomes. 1000/900', '../figures/GATC_motif_B3.png',10,saveData='../data/GATC_motif_B3.tsv')
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B2.txt' , 'GATC', 1000,900,'GATC frequency in B2 genomes. 1000/900', '../figures/GATC_motif_B2.png',10,saveData='../data/GATC_motif_B2.tsv')
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'GATC', 1000,900,'GATC frequency in B1 genomes. 1000/900', '../figures/GATC_motif_B1.png',10,saveData='../data/GATC_motif_B1.tsv')
+import os
+os.chdir('C:/Users/Admin/Documents/GitHub/tango/src')
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B3.txt' , 'GATC', 1000,900,'GATC frequency in B3 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B3.png',10,saveData='../data/with_reverse_complement/GATC_motif_B3.tsv',RC=True)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B2.txt' , 'GATC', 1000,900,'GATC frequency in B2 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B2.png',10,saveData='../data/with_reverse_complement/GATC_motif_B2.tsv',RC=True)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'GATC', 1000,900,'GATC frequency in B1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B1.png',10,saveData='../data/with_reverse_complement/GATC_motif_B1.tsv',RC=True)
 
+#cluster G have lots of TCGA. Compare to A1, B1
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_G.txt' , 'TCGA', 1000,900,'TCGA frequency in G genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_G.png',10,saveData='../data/with_reverse_complement/TCGA_motif_G.tsv',RC=True)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'TCGA', 1000,900,'TCGA frequency in A1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_A1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_A1.tsv',RC=True)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'TCGA', 1000,900,'TCGA frequency in B1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_B1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_B1.tsv',RC=True)
