@@ -11,7 +11,7 @@ import numpy as np
 def reverse_complement(pattern):
 	chars = list(pattern)
 	complement = ''
-	lookup = dict({("A","T"),("T","A"),("C","G"),("G","C")})
+	lookup = dict({("A","T"),("T","A"),("C","G"),("G","C"),("N","N")})
 	for base in chars:
 		complement += lookup[base]
 	rev_complement = complement[::-1]
