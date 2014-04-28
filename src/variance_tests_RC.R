@@ -1,13 +1,14 @@
 # repeat some of the analysis on the data with reverse complements added
 tud <- as.data.frame(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))
-tudrc <- as.data.frame(read.table('~/GitHub/tango/data/with_reverse_complement//all_phages_TUD_4_RC.tsv'))
+#tudrc <- as.data.frame(read.table('~/GitHub/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
+tudrc <- as.data.frame(read.table('~/projects/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
+
 d<- dist(tudrc)
 plot(hist(d))
 #holy shit it looks even better this way. 
 
 clusters <- sapply(rownames(tudrc), function(i) strsplit(x=strsplit(i,split="\\(")[[1]][2], split='\\)')[[1]][1])
 cf <- factor(clusters)
-
 tudrc["cluster"] <- clusters
 
 tudVars <- sort(apply(tudrc[1:256],2,var), decreasing=T)
@@ -72,10 +73,27 @@ clusterMinVals <- t(sapply(levels(cf), function(x) apply(tudrc[tudrc[,"cluster"]
 #dip statistic
 library(diptest)
 tudDip <- sort(apply(tudrc[1:256], 2, function(x) dip(x)),decreasing=T)
+tudDipO <- order(apply(tudrc[1:256], 2, function(x) dip(x)),decreasing=T)
 
-par(mfrow=c(16,16))
-par(mfcol=c(16,16), oma=c(1,1,0,0), mar=c(1,1,1,0), tcl=-0.1, mgp=c(0,0,0))
-
-for (i in 1:256){
-  plot(hist(tudrc[,i],breaks=50))
+#sort dataframe starting with largest variance 
+tudVarsO <- order(apply(tudrc[1:256],2,var), decreasing=T)
+tudrc2<- tudrc[,tudVarsO]
+tudrc3<- tudrc[,tudDipO]
+# try plotting lots of histograms on same plot
+pdf(file='figures/with_reverse_complement/motif_plots/all_motif_histograms_by_var.pdf')
+par(mfrow=c(4,4),mai=c(0.4,0.25,0.5,0.1))
+for (j in 1:16){
+    for (i in ((j-1)*16+1):(j*16)){
+    hist(tudrc2[,i],breaks=40,main=colnames(tudrc2[i]),xlab='TUD')
+  }
 }
+dev.off()
+
+pdf(file='figures/with_reverse_complement/motif_plots/all_motif_histograms_by_dip.pdf')
+par(mfrow=c(4,4),mai=c(0.4,0.25,0.5,0.1))
+for (j in 1:16){
+  for (i in ((j-1)*16+1):(j*16)){
+    hist(tudrc3[,i],breaks=40,main=colnames(tudrc3[i]),xlab='TUD')
+  }
+}
+dev.off()
