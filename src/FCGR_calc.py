@@ -18,9 +18,9 @@ with open(nameFile,'r') as nf:
 # do for each phage, save results to file
 fOutFile = 'C:/Users/Admin/Documents/GitHub/tango/data/with_reverse_complement/FCGR_all_frequency.tsv'
 pOutFile = 'C:/Users/Admin/Documents/GitHub/tango/data/with_reverse_complement/FCGR_all_probability.tsv'
-kmerList = enumerateKmers(4)
 with open(fOutFile,'w') as of:
 	# write header
+	kmerList = enumerateKmers(4)
 	kmerString = ''
 	for kmer in kmerList:
 		kmerString += kmer + '\t'
@@ -29,7 +29,7 @@ with open(fOutFile,'w') as of:
 	#write data for each file
 	for name, fileName in zip(names, fileNames):
 		print 'working with ' +name
-		fDict = kmerCount(fileName, 4, kmerList, RC=True)
+		fDict = dokmerCount(fileName, 4, RC=True)
 		valString = name
 		for kmer in kmerList:
 			valString += '\t'+str(fDict[kmer]) 
@@ -45,7 +45,7 @@ with open(pOutFile,'w') as of:
 	#write data for each file
 	for name, fileName in zip(names, fileNames):
 		print 'working with ' +name
-		pDict = kmerCount(fileName, 4, kmerList, probability=True, RC=True)
+		pDict = dokmerCount(fileName, 4, probability=True, RC=True)
 		valString = name
 		for kmer in kmerList:
 			valString += '\t'+str(pDict[kmer]) 
