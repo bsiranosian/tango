@@ -389,7 +389,7 @@ def doGCcontent(filename, windowSize, stepSize, plot=False, RC=False):
 	#do calc
 	gc = GCcontent(sequence, windowSize, stepSize)
 	if plot:
-		plt.plot(gc[1],gc[1])
+		plt.plot(gc[1],gc[0])
 		plt.xlabel('genomic position')
 		plt.ylabel('GC fraction')
 		plt.show()
