@@ -378,12 +378,19 @@ def GCcontent(sequence, windowSize, stepSize):
 
 #doGCcontent: computes GC content for a sequence in a fasta file.
 # see main function for details
+# if plot=True, plots the resulting line graph
 # if RC=True, passes the reverse complement of the sequence to the GC content function
-def doGCcontent(filename, windowSize, stepSize, RC=False):
+def doGCcontent(filename, windowSize, stepSize, plot=False, RC=False):
 	for seq_record in SeqIO.parse(filename, "fasta"):
 		sequence = seq_record.seq.tostring().upper()
 
 	if RC:
 		sequence = reverse_complement(sequence)
-
-	return GCcontent(sequence, windowSize, stepSize)
+	#do calc
+	gc = GCcontent(sequence, windowSize, stepSize)
+	if plot:
+		plt.plot(gc[1],gc[1])
+		plt.xlabel('genomic position')
+		plt.ylabel('GC fraction')
+		plt.show()
+	return gc

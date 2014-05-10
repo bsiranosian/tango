@@ -154,3 +154,7 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+data/window_kmer_count/all_prob_5000_k4.tsv
+data/window_kmer_count/all_prob_2000_k4.tsv
+data/window_kmer_count/all_freq_5000_k4.tsv
+data/window_kmer_count/all_freqs_2000_k4.tsv
