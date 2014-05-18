@@ -1,4 +1,61 @@
 # doing Naive Bayes on tetranucleotide probabilities with multinomial distributions. 
+# NEW CODE 2014-05-18
+# calclulations similar to TDI. In sliding window, get probability sequence came from cluster. 
+#get phage data 
+pdata <- as.data.frame(read.table('~/GitHub/tango/data/phagesDB/sequenced_phage_metadata_simple.txt',row.names=1, header=T))
+# read data for various nucleotides
+mers1 <- as.matrix(read.table('~/GitHub/tango/data/kmer_counts/all_freq_k1.tsv'))
+mers4 <- as.matrix(read.table('~/GitHub/tango/data/kmer_counts/all_freq_k4.tsv'))
+#normalize each to fraction
+mers1p <- mers1/rowSums(mers1)
+mers4p <- mers4/rowSums(mers4)
+
+#get data for a sliding window I have.
+jd <- as.matrix(read.table('~/GitHub/tango/data/kmer_counts/indiviudal/JoeDirt(L1)_2000_2000_k4_freq.txt'))
+#sums of counts in each cluster
+subclusters <- levels(pdata[,'subcluster'])
+subclusterNums <- table(pdata[,'subcluster'])
+subclustermers4 <- matrix(ncol=dim(mers4)[2])
+for (subcluster in subclusters){
+  if (subclusterNums[subcluster] > 1){
+    subclustermers4 <- rbind(subclustermers4, colSums(mers4[pdata[,'subcluster']==subcluster,]))
+  }
+  else subclustermers4 <- rbind(subclustermers4, mers4[pdata[,'subcluster']==subcluster,])
+}
+subclustermers4 <- subclustermers4[2:(length(subclusters)+1),]
+rownames(subclustermers4) <- subclusters
+subclustermers4p <- subclustermers4 / rowSums(subclustermers4)
+
+#Likelihood of each section of each cluster being the origin
+likelihood.cluster = apply(jd, 1, function(y) apply(subclustermers4p, 1, function(x) dmultinom(y, size=sum(y),prob=x,log=T)))
+#plot likelihoods of various clusters
+num = 48
+cp <- rainbow(num)
+plot(likelihood.cluster[1,],type='o',col=cp[1],ylim=c(-1500,max(likelihood.cluster)))
+for (i in 1:48){
+  lines(likelihood.cluster[i,],type='o',col=cp[i])
+}
+#legend(1, 0.15, rownames(likelihood.cluster), cex=0.5, col=cp, lty=1)
+
+# REPEAT FOR BONGO(M1)
+#get data for a sliding window I have.
+bongo <- as.matrix(read.table('~/GitHub/tango/data/kmer_counts/indiviudal/Bongo(M1)_5000_2500_k4_freq.txt'))
+
+#Likelihood of each section of each cluster being the origin
+likelihood.cluster.bongo = apply(bongo, 1, function(y) apply(subclustermers4p, 1, function(x) dmultinom(y, size=sum(y),prob=x,log=T)))
+max.likelihood.bongo <- apply(likelihood.cluster.bongo,2,which.max)
+rownames(likelihood.cluster.bongo)[max.likelihood.bongo]
+
+#plot likelihoods of various clusters
+num = 48
+cp <- rainbow(num)
+plot(likelihood.cluster.bongo[1,],type='o',col=cp[1],ylim=c(-1500,max(likelihood.cluster)))
+for (i in 1:48){
+  lines(likelihood.cluster.bongo[i,],type='o',col=cp[i])
+}
+#legend(1, 0.15, rownames(likelihood.cluster), cex=0.5, col=cp, lty=1)
+
+
 
 #read in 4-mer probabilities and frequencies for all phage
 probs <- as.data.frame(read.table('~/GitHub/tango/data/with_reverse_complement/FCGR_all_probability.tsv'))
