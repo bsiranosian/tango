@@ -394,3 +394,104 @@ def doGCcontent(filename, windowSize, stepSize, plot=False, RC=False):
 		plt.ylabel('GC fraction')
 		plt.show()
 	return gc
+
+#converts a tab separated TUD file to the nexus format
+# each tetranucleotide will be treated as a character
+# if parseClusters is True,  
+def tud_to_nexus(tudFile, outFile, parseClusters):
+	# read data  
+	with open(tudFile, 'r') as tf:
+		# first line is the tab separated names of the tetranucleotides
+		tetraNames = tf.readline().strip().split('\t')
+
+		line = tf.readline().strip().split('\t')
+		names = []
+		data = []
+		while line != ['']:
+			names.append(line[0])
+			data.append(line[1:])
+			line = tf.readline().strip().split('\t')
+		# we can get the clusters from the names when they're defined within a  '()'
+		if parseClusters:
+			clusters = [n.split('(')[1].split(')')[0] for n in names]
+			newNames = [n.split('(')[0] for n in names]
+			names = newNames
+	print 'read file'
+	#start to write things to the nexus file
+	with open(outFile, 'w') as of:
+		of.write('#NEXUS\n')
+		#write Taxa block
+		of.write('BEGIN TAXA;\n')
+		of.write('DIMENSIONS NTAX=' + str(len(names)) + ';\n')
+		taxlabels = 'TAXLABELS'
+		for name in names:
+			taxlabels += ' ' + name
+		taxlabels += ';\n'
+		of.write(taxlabels)
+		of.write('END;\n')
+
+		#write character block
+		of.write('BEGIN CHARACTERS;\n')
+		of.write('\tDIMENSIONS [NTAX='+str(len(names))+'] NCAHR='+str(len(data[0]))+';\n')
+		of.write('\t[FORMAT\n') 
+		of.write('\t\t[DATATYPE=CONTINUOUS]\n')
+		of.write('\t;]\n')
+		of.write('\tMATRIX\n')
+		for name,mat in zip(names, data):
+			toWrite = '\t\t'+name
+			for tud in mat:
+				toWrite += ' '+ str(tud)
+			of.write(toWrite+'\n')
+		of.write('\t;\n')
+		of.write('END;\n')
+
+#converts a tab separated TUD file to the nexus format
+# each tetranucleotide will be treated as a character
+# if parseClusters is True, eliminate the cluster designation within parenthases
+def distance_to_nexus(distanceFile, outFile, parseClusters):
+	# read data  
+	with open(distanceFile, 'r') as tf:
+		# first line is the tab separated names of the tetranucleotides
+		tetraNames = tf.readline().strip().split('\t')
+
+		line = tf.readline().strip().split('\t')
+		names = []
+		data = []
+		while line != ['']:
+			names.append(line[0])
+			data.append(line[1:])
+			line = tf.readline().strip().split('\t')
+		# we can get the clusters from the names when they're defined within a  '()'
+		if parseClusters:
+			clusters = [n.split('(')[1].split(')')[0] for n in names]
+			newNames = [n.split('(')[0] for n in names]
+			names = newNames
+	#start to write things to the nexus file
+	with open(outFile, 'w') as of:
+		of.write('#NEXUS\n')
+		#write Taxa block
+		of.write('BEGIN TAXA;\n')
+		of.write('DIMENSIONS NTAX=' + str(len(names)) + ';\n')
+		taxlabels = 'TAXLABELS'
+		for name in names:
+			taxlabels += ' ' + name
+		taxlabels += ';\n'
+		of.write(taxlabels)
+		of.write('END;\n')
+
+		#write character block
+		of.write('BEGIN DISTANCES;\n')
+		of.write('\tDIMENSIONS NTAX='+str(len(names))+';\n')
+		of.write('\tFORMAT\n') 
+		of.write('\t\tTRIANGLE=BOTH\n')
+		of.write('\t\tDIAGONAL\n')
+		of.write('\t\tLABELS=LEFT\n')
+		of.write('\t;\n')
+		of.write('\tMATRIX\n')
+		for name,mat in zip(names, data):
+			toWrite = '\t\t'+name
+			for tud in mat:
+				toWrite += ' '+ str(tud)
+			of.write(toWrite+'\n')
+		of.write('\t;\n')
+		of.write('END;\n')

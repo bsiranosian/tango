@@ -35,7 +35,14 @@ plot(likelihood.cluster[1,],type='o',col=cp[1],ylim=c(-1500,max(likelihood.clust
 for (i in 1:48){
   lines(likelihood.cluster[i,],type='o',col=cp[i])
 }
-#legend(1, 0.15, rownames(likelihood.cluster), cex=0.5, col=cp, lty=1)
+legend(1, 0.15, rownames(likelihood.cluster), cex=0.5, col=cp, lty=1)
+# find max in each window
+rownames(likelihood.cluster)[apply(likelihood.cluster,2,which.max)]
+
+# nicer figure to use in report
+plot((1:37)*2000, likelihood.cluster["L1",1:37], ,ylim=c(-950,-600),type='o', col='blue',xlab="Genomic position", ylab="log-likelihood", main="4-mer usage in JoeDirt compared to cluster averages, 2000bp sliding window")
+lines( (1:37)*2000, likelihood.cluster["J",1:37], type='o', col='red')
+legend(1, -710, c("p(cluster L1|JoeDirt)", "p(cluster J|JoeDirt)") , cex=0.8, col=c("blue","red"), lty=1)
 
 # REPEAT FOR BONGO(M1)
 #get data for a sliding window I have.
