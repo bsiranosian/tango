@@ -1,1 +1,1 @@
-Myrna(C2)	C:/Users/Admin/Desktop/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Myrna.fasta
+Myrna(C2)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Myrna.fasta

@@ -11,6 +11,7 @@ parser.add_argument("--subset", action="store", metavar="subset", default="False
 parser.add_argument("--windowSize", action="store", metavar="windowSize", default="5000", help="The size of the window to compute TDI within. Default of 5000bp is used in Pride et. al 2006")
 parser.add_argument("--stepSize", action="store", metavar="stepSize", default="1000", help="How many bases to move the window along the genome at each iteration. Default of 1000bp is used in Pride et. al 2006")
 parser.add_argument("--k", action="store", metavar="k", default="4", help="Can also use this to compute 2,3,5-mers, etc. UNTESTED!")
+parser.add_argument("--saveFile", action="store", metavar="saveFile", default=None, help="specify a filename to save resulting data to")
 args=parser.parse_args()
 
 nameFile=args.nameFile
@@ -24,12 +25,14 @@ else: subset=False
 windowSize=int(args.windowSize)
 stepSize=int(args.stepSize)
 k=int(args.k)
+saveFile = args.saveFile
 
 
 from tetranucleotideAnalysis import *
 import matplotlib.cm as mplcm
 import matplotlib.colors as colors
 import numpy as np
+import csv
 #compareTDI(): plots multiple tetranucleotide difference index signals on the same plot. 
 # takes as input a tab delimited file of phage info with 2 necessary fields and 2 optional fields:
 # 	name 	fastaPath	subsetStart	subsetEnd
@@ -39,7 +42,8 @@ import numpy as np
 # other arguments (windowSize, stepSize, k) are passed to the TDI function. 
 # plot titled with title. saves the resulting plot to saveName
 # only first maxNum lines are plotted. the first 10 phage defined in the input file are plotted by default. 
-def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveName, maxNum):
+# if saveFile is not None, saves a csv file of the data to the file specified. 
+def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveName, maxNum, saveFile):
 	# read information in nameFile
 	names = []
 	fnames = []
@@ -105,7 +109,15 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 	plt.savefig(saveName, dpi=300)
 	plt.clf()
 	print "Plot \' " + title+ "\' saved to " + saveName 
+
+	if saveFile != None:
+		with open(saveFile, 'w') as sf:
+			writer = csv.writer(sf)
+			writer.writerow(['name']+data[0][0])
+			for row, name  in zip(data, names):
+				writer.writerow([name]+row[1])
+
 	print "Done  :)"
 
 # function call
-compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName,maxNum)
+compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName,maxNum,saveFile)

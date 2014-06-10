@@ -1,1 +1,1 @@
-Hawkeye(D2)	C:/Users/Admin/Desktop/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Hawkeye.fasta
+Hawkeye(D2)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Hawkeye.fasta

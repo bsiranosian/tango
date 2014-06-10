@@ -95,70 +95,6 @@ def TUDFromString(sequence, k, kmerList):
 		kmerDict[kmer] =oKmer/eKmer
 	return kmerDict
 
-#similar to phageTUDCalc, except uses BioPython to parse through a single FASTA file with
-#a large number of mycobacteria 
-#modified to produce CSV files to reduce R processing errors
-def mycobacteriaTUDCalc(filename, outfile, k):
-
-	with open(outfile, 'w') as of:
-		kmerList = enumerateKmers(4)
-		wroteKmersAtTop = False
-
-		for seq_record in SeqIO.parse(filename, "fasta"):
-			sequence = seq_record.seq.tostring().upper()
-			name = seq_record.description.split("| ")[1].replace(" ", "_").replace(',', '-')
-
-			tud = TUDFromString(sequence, k, kmerList)
-
-			#if it's the first time, write kmers at the top of the file
-			#else, skip over
-			if not wroteKmersAtTop:
-				kmers = ''
-				for kmer in tud.keys():
-					kmers += '\t' + kmer
-				of.write(kmers+'\n')
-				wroteKmersAtTop = True
-
-			print('working with ' + name)
-			tud = TUDFromString(sequence, k, kmerList)
-			#write each result to file
-			toWrite = name
-			for j in tud.values():
-				toWrite += '\t' + str(j)
-			of.write(toWrite+'\n')
-
-
-#open a list of tab separated phage names (col1) and filenames (col2), one per line. 
-#calculates TUD for each and writes results to outfile. 
-def phageTUDCalc(phageFile, outfile, k,RC=False):
-	#open and read in names and filenames
-	with open(phageFile, 'r') as pf:
-		phages = []
-		line = pf.readline()
-		while line != '':
-			phages.append(line.strip().split('\t'))
-			line=pf.readline()
-
-	with open(outfile, 'w') as of:
-		kmerList = enumerateKmers(k)
-		#get one tud, write kmers at top
-		oneTud = TUD(phages[0][1], k, kmerList,RC=RC)
-		kmers = ''
-		for kmer in oneTud.keys():
-			kmers += '\t' + kmer
-		of.write(kmers+'\n')
-		#get TUD data for each phage
-		for phage in phages:
-			name = phage[0]
-			print('working with ' + name)
-			fname = phage[1]
-			tud = TUD(fname, k, kmerList,RC=RC)
-			#write each result to file
-			toWrite = name
-			for j in tud.values():
-				toWrite += '\t' + str(j)
-			of.write(toWrite+'\n')
-
 #plots comparison line plot between the lines in dataFile (an output of phageTUDcalc)
 # legend is the first row of dataFile. Title is displayed from title
 # if plot is True, plots the resulting line graph. If false, returns the data structure of binned values.
@@ -218,8 +154,10 @@ def plotTUD(dataFile, title, plot, saveName=None, subset=None):
 # if subset is defined, only return information about the sequence between the two positions. 
 def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC=False):
 	#construct a dictionary of all kmers
-	kmerDict = dict((key, []) for key in kmerList)
-	kmerDictGenome = dict((key, 0) for key in kmerList)
+	#obsKmerDict = dict((key, []) for key in kmerList)
+	#expKmerDict = dict((key, []) for key in kmerList)
+	#kmerDictGenome = dict((key, 0) for key in kmerList)
+	
 	#parse fasta from filename
 	for seq_record in SeqIO.parse(filename, "fasta"):
 		sequence = seq_record.seq.tostring().upper()
@@ -231,48 +169,42 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC
 	if subset != None:
 		sequence = sequence[subset[0]:subset[1]]
 
+	#get TUD dict to use in TDI comparison
+	tudDict = TUDFromString(sequence,k,kmerList)
+
 	# slide along the genome in windows defined by windowSize with steps defined by stepSize
 	start = 0
 	end = windowSize
 	windowIndex= []
+	differencesWindows = []
 	while end < len(sequence):
 		if end > len(sequence):
 			end = len(sequence)
-		#print str(start) + " - " + str(end)
 		window = sequence[start:end]
 		#record list of windows
 		windowIndex.append([start,end])
-		for kmer in kmerDict.keys():
-			oKmer, eKmer = TDI_kmerCount(kmer, window)
-			# add observed over expected to dictionary
-			if eKmer == 0:
-				#print kmer
-				#print oKmer
-				kmerDict[kmer].append(1)
-			else:
-				kmerDict[kmer].append(oKmer/eKmer)
+		
+		# calculate observed and expected in the window 
+		# returns a dictionary 
+		obs = kmerCount(window, k, kmerList)
+		exp = zeroOrderExpected(window, k, kmerList)
+
+		#compute difference sum for all kmers
+		differenceSum = 0
+		for kmer in kmerList:
+			differenceSum += abs((obs[kmer]/exp[kmer])-tudDict[kmer])
+		differencesWindows.append(differenceSum)
+
 		#slide along the window by stepSize
 		start += stepSize
 		end += stepSize
-	#compute kmers for whole genome.. not sure if we have to do this. 
-	for kmer in kmerDictGenome.keys():
-		oKmer, eKmer = TDI_kmerCount(kmer, sequence)
-		# add observed over expected to dictionary
-		kmerDictGenome[kmer]=oKmer/eKmer
-	# compute tetranucleotide differences for each window. 
-	differences = []
-	for w in range(len(windowIndex)):
-		# sum differences over all kmers
-		sumD = 0
-		for k, v in kmerDict.items():
-			sumD += abs(kmerDictGenome[k] - v[w])
-		differences.append(sumD)
+
 	# compute Z-score   Z=(x-mu)/sigma
 	Zscores = []
-	mu = np.mean(differences)
-	sigma = np.std(differences)
-	for w in range(len(windowIndex)):
-		Zscores.append((differences[w] - mu)/sigma)
+	mu = np.mean(differencesWindows)
+	sigma = np.std(differencesWindows)
+	for w in range(len(differencesWindows)):
+		Zscores.append((differencesWindows[w] - mu)/sigma)
 
 	# PLOT SHIT
 	xaxis = [x for x,y in windowIndex]
@@ -283,24 +215,33 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC
 
 	return [xaxis,Zscores]
 
-#helper function to count observed and expected kmers in a given window.
-# takes in a kmer and window, both strings. Normalizes with markov chain method. 
-def TDI_kmerCount(kmer, window):
-	#observed count in window
-	reg =  r'(?=('+kmer+'))'
-	oKmer = float(len(re.findall(reg, window,)))
-	#expected count in sequence done with markov chain analysis? Different than TUD calculation. 
-	#ratio compared to the subwords. 
-	reg1 = r'(?=('+kmer[1:]+'))'
-	reg2 = r'(?=('+kmer[:len(kmer)-1]+'))'
-	reg3 = r'(?=('+kmer[1:len(kmer)-1]+'))'
-	#print "window: " + str(len(window))
-	eKmer = (float(len(re.findall(reg1, window)))) * (float(len(re.findall(reg2, window,)))) / (float(len(re.findall(reg3, window))))
-	#print (float(len(re.findall(reg1, window))))
-	#print (float(len(re.findall(reg2, window)))) 
-	#print (float(len(re.findall(reg3, window)))) 
-	#print kmer + ": o: " +str(oKmer) + " e: "+str(eKmer)
-	return (oKmer, eKmer)
+#zeroOrderExpected(sequence, k, kmerList): computes the expected number of a kmer in a genome using a 
+# zero order markov model. Takes as input a sequence, value for k, and a kmerList
+# returns a dictionary with the kmers as keys and the expected number as values
+def zeroOrderExpected(sequence, k, kmerList):
+	#construct a dictionary of all kmers
+	kmerDict = dict((key, 0 ) for key in kmerList)
+
+	eA = sequence.count('A')/float(len(sequence))
+	eT = sequence.count('T')/float(len(sequence))
+	eC = sequence.count('C')/float(len(sequence))
+	eG = sequence.count('G')/float(len(sequence))
+	#calculate TUD for each kmer
+	for kmer in kmerDict.keys():
+		#print 'calculating for ' + kmer
+		#observed count in genome
+		reg =  r'(?=('+kmer+'))'
+		oKmer = float(len(re.findall(reg, sequence)))
+		#print 'observed: ' + str(oKmer)
+		#expected count in sequence
+		#number of each letter in kmer 
+		kA = kmer.count('A')
+		kT = kmer.count('T')
+		kC = kmer.count('C')
+		kG = kmer.count('G')
+		eKmer = (math.pow(eA,kA)*math.pow(eT,kT)*math.pow(eC,kC)*math.pow(eG,kG))*len(sequence)
+		kmerDict[kmer] = eKmer
+	return kmerDict
 
 #kmerCount(filename, k, kmerlist): computes the number of each kmer for a sequence. 
 # also takes as input an integer k and a list of all k-mers over the nucleotide alphabet, generated by enumerateKmers 
@@ -495,3 +436,68 @@ def distance_to_nexus(distanceFile, outFile, parseClusters):
 			of.write(toWrite+'\n')
 		of.write('\t;\n')
 		of.write('END;\n')
+
+
+#similar to phageTUDCalc, except uses BioPython to parse through a single FASTA file with
+#a large number of mycobacteria 
+#modified to produce CSV files to reduce R processing errors
+def mycobacteriaTUDCalc(filename, outfile, k):
+
+	with open(outfile, 'w') as of:
+		kmerList = enumerateKmers(4)
+		wroteKmersAtTop = False
+
+		for seq_record in SeqIO.parse(filename, "fasta"):
+			sequence = seq_record.seq.tostring().upper()
+			name = seq_record.description.split("| ")[1].replace(" ", "_").replace(',', '-')
+
+			tud = TUDFromString(sequence, k, kmerList)
+
+			#if it's the first time, write kmers at the top of the file
+			#else, skip over
+			if not wroteKmersAtTop:
+				kmers = ''
+				for kmer in tud.keys():
+					kmers += '\t' + kmer
+				of.write(kmers+'\n')
+				wroteKmersAtTop = True
+
+			print('working with ' + name)
+			tud = TUDFromString(sequence, k, kmerList)
+			#write each result to file
+			toWrite = name
+			for j in tud.values():
+				toWrite += '\t' + str(j)
+			of.write(toWrite+'\n')
+
+
+#open a list of tab separated phage names (col1) and filenames (col2), one per line. 
+#calculates TUD for each and writes results to outfile. 
+def phageTUDCalc(phageFile, outfile, k,RC=False):
+	#open and read in names and filenames
+	with open(phageFile, 'r') as pf:
+		phages = []
+		line = pf.readline()
+		while line != '':
+			phages.append(line.strip().split('\t'))
+			line=pf.readline()
+
+	with open(outfile, 'w') as of:
+		kmerList = enumerateKmers(k)
+		#get one tud, write kmers at top
+		oneTud = TUD(phages[0][1], k, kmerList,RC=RC)
+		kmers = ''
+		for kmer in oneTud.keys():
+			kmers += '\t' + kmer
+		of.write(kmers+'\n')
+		#get TUD data for each phage
+		for phage in phages:
+			name = phage[0]
+			print('working with ' + name)
+			fname = phage[1]
+			tud = TUD(fname, k, kmerList,RC=RC)
+			#write each result to file
+			toWrite = name
+			for j in tud.values():
+				toWrite += '\t' + str(j)
+			of.write(toWrite+'\n')
