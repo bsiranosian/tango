@@ -1,7 +1,7 @@
 # repeat some of the analysis on the data with reverse complements added
 tud <- as.data.frame(read.table('~/GitHub/tango/data/all_phages_TUD.tsv'))
-#tudrc <- as.data.frame(read.table('~/GitHub/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
-tudrc <- as.data.frame(read.table('~/projects/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
+tudrc <- as.data.frame(read.table('~/GitHub/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
+#tudrc <- as.data.frame(read.table('~/projects/tango/data/with_reverse_complement/all_phages_TUD_4_RC.tsv'))
 
 d<- dist(tudrc)
 plot(hist(d))

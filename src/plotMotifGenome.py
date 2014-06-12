@@ -66,14 +66,14 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 	for phage,name in zip(data, names):
 		xaxis = [start for (start, count) in phage]
 		# find largest set of bins to save data with
-		if len(xaxis) < len(maxXaxis):
+		if len(xaxis) > len(maxXaxis):
 			maxXaxis = xaxis
 		counts  = [count for (start, count) in phage]
 		if i < maxNum:
 			color = cm(1.*i/NUM_COLORS)
 			plt.plot(xaxis, counts, lw=1, label=name)
 			i+=1
-
+	print maxXaxis
 	handles, labels = ax.get_legend_handles_labels()
 	plt.title(title)
 	plt.xlabel('genomic position')
@@ -89,13 +89,17 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 			# header of motif and genomic positions
 			header = motif
 			for pos in maxXaxis:
-				header += '\t'+str(pos)
+				header += ','+str(pos)
 			of.write(header+'\n')
 			for phage,name in zip(data, names):
 				counts  = [count for (start, count) in phage]
 				toWrite = name
-				for count in counts:
-					toWrite += '\t'+str(count)
+				for i in range(len(maxXaxis)):
+					if i < len(counts):
+						toWrite += ','+str(counts[i])
+					else:
+						toWrite += ','
+
 				of.write(toWrite+ '\n')
 	print "Done  :)"
 
@@ -103,25 +107,30 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 #plot this cool GATC motif for some clusters
 # B3 is extremely elevated. look in comparison to a few others 
 import os
+# os.chdir('C:/Users/Admin/Documents/GitHub/tango/src')
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B3.txt' , 'GATC', 5000,2500,'GATC frequency in B3 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GATC_motif_B3.png',10,saveData='../data/without_reverse_complement/GATC_motif_B3.tsv',RC=False)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B2.txt' , 'GATC', 5000,2500,'GATC frequency in B2 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GATC_motif_B2.png',10,saveData='../data/without_reverse_complement/GATC_motif_B2.tsv',RC=False)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'GATC', 5000,2500,'GATC frequency in B1 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GATC_motif_B1.png',10,saveData='../data/without_reverse_complement/GATC_motif_B1.tsv',RC=False)
+
 os.chdir('C:/Users/Admin/Documents/GitHub/tango/src')
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B3.txt' , 'GATC', 1000,900,'GATC frequency in B3 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B3.png',10,saveData='../data/with_reverse_complement/GATC_motif_B3.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B2.txt' , 'GATC', 1000,900,'GATC frequency in B2 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B2.png',10,saveData='../data/with_reverse_complement/GATC_motif_B2.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'GATC', 1000,900,'GATC frequency in B1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/GATC_motif_B1.png',10,saveData='../data/with_reverse_complement/GATC_motif_B1.tsv',RC=True)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B3.txt' , 'GGATCC', 5000,2500,'GGATCC frequency in B3 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GGATCC_motif_B3.png',10,saveData='../data/without_reverse_complement/GGATCC_motif_B3.tsv',RC=False)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B2.txt' , 'GGATCC', 5000,2500,'GGATCC frequency in B2 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GGATCC_motif_B2.png',10,saveData='../data/without_reverse_complement/GGATCC_motif_B2.tsv',RC=False)
+plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'GGATCC', 5000,2500,'GGATCC frequency in B1 genomes. 1000/500', '../figures/without_reverse_complement/motif_plots/GGATCC_motif_B1.png',10,saveData='../data/without_reverse_complement/GGATCC_motif_B1.tsv',RC=False)
 
-#cluster G have lots of TCGA. Compare to A1, B1
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_G.txt' , 'TCGA', 1000,900,'TCGA frequency in G genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_G.png',10,saveData='../data/with_reverse_complement/TCGA_motif_G.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'TCGA', 1000,900,'TCGA frequency in A1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_A1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_A1.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'TCGA', 1000,900,'TCGA frequency in B1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_B1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_B1.tsv',RC=True)
+# #cluster G have lots of TCGA. Compare to A1, B1
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_G.txt' , 'TCGA', 1000,900,'TCGA frequency in G genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_G.png',10,saveData='../data/with_reverse_complement/TCGA_motif_G.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'TCGA', 1000,900,'TCGA frequency in A1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_A1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_A1.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'TCGA', 1000,900,'TCGA frequency in B1 genomes. 1000/900', '../figures/with_reverse_complement/motif_plots/TCGA_motif_B1.png',10,saveData='../data/with_reverse_complement/TCGA_motif_B1.tsv',RC=True)
 
-#cluter L have lots of CCTA. Compare to some others 
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L1.txt' , 'CCTA', 1000,200,'CCTA frequency in L1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L1.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L2.txt' , 'CCTA', 1000,200,'CCTA frequency in L2 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L2.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L2.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L3.txt' , 'CCTA', 1000,200,'CCTA frequency in L3 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L3.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L3.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'CCTA', 1000,200,'CCTA frequency in A1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_A1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_A1.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'CCTA', 1000,200,'CCTA frequency in B1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_B1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_B1.tsv',RC=True)
-#cluter L have lots of CTTA. Compare to some others 
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L1.txt' , 'CTTA', 1000,200,'CTTA frequency in L1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L1.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L2.txt' , 'CTTA', 1000,200,'CTTA frequency in L2 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L2.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L2.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L3.txt' , 'CTTA', 1000,200,'CTTA frequency in L3 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L3.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L3.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'CTTA', 1000,200,'CTTA frequency in A1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_A1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_A1.tsv',RC=True)
-plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'CTTA', 1000,200,'CTTA frequency in B1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_B1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_B1.tsv',RC=True)
+# #cluter L have lots of CCTA. Compare to some others 
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L1.txt' , 'CCTA', 1000,200,'CCTA frequency in L1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L1.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L2.txt' , 'CCTA', 1000,200,'CCTA frequency in L2 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L2.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L2.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L3.txt' , 'CCTA', 1000,200,'CCTA frequency in L3 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_L3.png',10,saveData='../data/with_reverse_complement/CCTA_motif_L3.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'CCTA', 1000,200,'CCTA frequency in A1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_A1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_A1.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'CCTA', 1000,200,'CCTA frequency in B1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CCTA_motif_B1.png',10,saveData='../data/with_reverse_complement/CCTA_motif_B1.tsv',RC=True)
+# #cluter L have lots of CTTA. Compare to some others 
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L1.txt' , 'CTTA', 1000,200,'CTTA frequency in L1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L1.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L2.txt' , 'CTTA', 1000,200,'CTTA frequency in L2 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L2.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L2.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_L3.txt' , 'CTTA', 1000,200,'CTTA frequency in L3 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_L3.png',10,saveData='../data/with_reverse_complement/CTTA_motif_L3.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_A1.txt' , 'CTTA', 1000,200,'CTTA frequency in A1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_A1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_A1.tsv',RC=True)
+# plotMotifGenome('../data/TDI_individual_clusters/windows/sequenced_phage_map_B1.txt' , 'CTTA', 1000,200,'CTTA frequency in B1 genomes. 1000/200', '../figures/with_reverse_complement/motif_plots/CTTA_motif_B1.png',10,saveData='../data/with_reverse_complement/CTTA_motif_B1.tsv',RC=True)
