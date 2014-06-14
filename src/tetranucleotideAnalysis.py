@@ -471,6 +471,49 @@ def mycobacteriaTUDCalc(filename, outfile, k):
 			of.write(toWrite+'\n')
 
 
+#converts a tab separated TUD file to the mega format
+# each tetranucleotide will be treated as a character
+# if parseClusters is True, eliminate the cluster designation within parenthases
+def distance_to_mega(distanceFile, outFile, parseClusters):
+	# read data  
+	with open(distanceFile, 'r') as tf:
+		# first line is the tab separated names of the tetranucleotides
+		tetraNames = tf.readline().strip().split('\t')
+
+		line = tf.readline().strip().split('\t')
+		names = []
+		data = []
+		while line != ['']:
+			names.append(line[0])
+			data.append(line[1:])
+			line = tf.readline().strip().split('\t')
+		# we can get the clusters from the names when they're defined within a  '()'
+		if parseClusters:
+			clusters = [n.split('(')[1].split(')')[0] for n in names]
+			newNames = [n.split('(')[0] for n in names]
+			names = newNames
+	print len(data)
+	print len(data[0])
+	#start to write things to the mega file
+	with open(outFile, 'w') as of:
+		of.write('#MEGA\n')
+		of.write('!Title tetst;\n')
+		of.write('!Description tetst;\n')
+		#write Taxa block
+		for name in names:
+			of.write('#' + name + '\n')
+
+		#write distances as lower half of matrix
+		count=0
+		for line in data:
+			print count
+			toWrite = ''
+			for i in range(count):
+				toWrite += str(line[i]) + ' '
+			of.write(toWrite+'\n')
+			count += 1
+		
+
 #open a list of tab separated phage names (col1) and filenames (col2), one per line. 
 #calculates TUD for each and writes results to outfile. 
 def phageTUDCalc(phageFile, outfile, k,RC=False):
