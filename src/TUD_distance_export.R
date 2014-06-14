@@ -8,8 +8,11 @@ sixtynames[33] <- 'PLot'
 all_subset <- all[allnames %in% sixtynames, ]
 
 d <- as.matrix(dist(all_subset))
+d_all <- as.matrix(dist(all))
 write.table(d, file='GitHub/tango/data/with_reverse_complement/Hatful_60_TUD_distance.tsv', sep='\t', quote=F)
 write.table(all_subset, file='GitHub/tango/data/with_reverse_complement/Hatful_60_TUD.tsv', sep='\t', quote=F)
+write.table(d_all, file='GitHub/tango/data/with_reverse_complement/all_TUD_distance.tsv', sep='\t', quote=F)
+
 
 # get 60 subset for 3mers,5mers,6mers
 dev2 <- as.matrix(read.table('~/GitHub/tango/data/kmer_counts/all_dev_k2.tsv'))
