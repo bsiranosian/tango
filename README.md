@@ -22,4 +22,4 @@ _2014-06-15—2014-04-18_
 Jeez I have no idea.  Review the commit log.  Actually please don't.  
 
 _2014-04-17_
-Added inital code for TUD calculation and figure generation. Two output files are created from the data in the Hatful et. al 2010 comparative phage genomics paper. This subset of phages will be used for inital tests of our algorithms. 
+Added inital code for TUD calculation and figure generation. Two output files are created from the data in the Hatfull et. al 2010 comparative phage genomics paper. This subset of phages will be used for inital tests of our algorithms. 
