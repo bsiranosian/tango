@@ -15,7 +15,11 @@ directories
 
 changelog
 ---------
-2014-06-15 - 2014-04-18
-Jeez I have no idea.  Review the commit log.  Actually don't.  
-2014-04-17
+_2014-06-16_
+The second coming.  
+
+_2014-06-15—2014-04-18_
+Jeez I have no idea.  Review the commit log.  Actually please don't.  
+
+_2014-04-17_
 Added inital code for TUD calculation and figure generation. Two output files are created from the data in the Hatful et. al 2010 comparative phage genomics paper. This subset of phages will be used for inital tests of our algorithms. 
