@@ -61,28 +61,12 @@ def enumerateKmers(k):
 		k -= 1 
 	return kmerList
 
-#TDI(): computes the k-mer difference index for a given genome. Takes in a filename, size of window to compute TDI in, 
+#TDI(): computes the k-mer difference index for a given genome. Takes in a fileName, size of window to compute TDI in, 
 # step size to move along the genome by, k, a list of kmers of length k, and a boolean plot. 
 # if plot is true, plot the resulting figure using matplotlib. 
 # always returns a list of window positions and Zscores
 # if subset is defined, only return information about the sequence between the two positions. 
-def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC=False):
-	#construct a dictionary of all kmers
-	#obsKmerDict = dict((key, []) for key in kmerList)
-	#expKmerDict = dict((key, []) for key in kmerList)
-	#kmerDictGenome = dict((key, 0) for key in kmerList)
-	
-	#parse fasta from filename
-	for seq_record in SeqIO.parse(filename, "fasta"):
-		sequence = seq_record.seq.tostring().upper()
-	# append reverse complement if RC=True
-	if RC:
-		sequence += reverseComplement(sequence)
-
-	# pick out part defined in subset
-	if subset != None:
-		sequence = sequence[subset[0]:subset[1]]
-
+def TDI(sequence, windowSize, stepSize, k):
 	#get TUD dict to use in TDI comparison
 	tudDict = TUDFromString(sequence,k,kmerList)
 
@@ -100,8 +84,8 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC
 		
 		# calculate observed and expected in the window 
 		# returns a dictionary 
-		obs = kmerCount(window, k, kmerList)
-		exp = zeroOrderExpected(window, k, kmerList)
+		obs = kmerCount(window, k)
+		exp = zeroOrderExpected(window, k)
 
 		#compute difference sum for all kmers
 		differenceSum = 0
@@ -120,40 +104,53 @@ def TDI(filename, windowSize, stepSize, k, kmerList, subset=None, plot=False, RC
 	for w in range(len(differencesWindows)):
 		Zscores.append((differencesWindows[w] - mu)/sigma)
 
-	# PLOT SHIT
 	xaxis = [x for x,y in windowIndex]
-	if plot:
-		plt.plot(xaxis, Zscores, lw=1)
-		# ADD INFORMATION TO AXES, ET
-		plt.show()
-
 	return [xaxis,Zscores]
 
-#zeroOrderExpected(sequence, k, kmerList): computes the expected number of a kmer in a genome using a 
-# zero order markov model. Takes as input a sequence, value for k, and a kmerList
-# returns a dictionary with the kmers as keys and the expected number as values
-def zeroOrderExpected(sequence, k, kmerList):
-	#construct a dictionary of all kmers
-	kmerDict = dict((key, 0 ) for key in kmerList)
+#doTDI(fileName, windowSize, stepSize, k, subset=None, plot=False): a wrapper
+# for the calculation of tetranucleotide deviation index in a sequence. 
+# reads the single sequence defined in fileName, calculates TDI for k-mers in a sliding window
+# defined by windowSize and stepSize. 
+# can extract a subset of the sequence by passing a list of two integers to subset
+# if plot=True, plots an example graph to the graphics device
+# returns [xaxis positions, zscores]
+def doTDI(fileName, windowSize, stepSize, k, subset=None, plot=False):
+	#parse fasta from fileName
+	sequence = parseFasta(fileName)
+	# pick out part defined in subset
+	if subset != None:
+		sequence = sequence[subset[0]:subset[1]]
 
-	eA = sequence.count('A')/float(len(sequence))
-	eT = sequence.count('T')/float(len(sequence))
-	eC = sequence.count('C')/float(len(sequence))
-	eG = sequence.count('G')/float(len(sequence))
-	#calculate TUD for each kmer
+	#do TDI calculation
+	tdi = TDI(sequence,windowSize,stepSize,k)
+
+	# PLOT SHIT
+	if plot:
+		plt.plot(tdi[0], tdi[1], lw=1)
+		# ADD INFORMATION TO AXES, ETC
+		plt.show()
+	return [tdi[0],tdi[1]]
+
+
+#zeroOrderExpected(sequence, k): computes the expected number of a kmer in a genome using a 
+# zero order markov model. Takes as input a sequence and a value for k
+# returns a dictionary with the kmers as keys and the expected number as values
+def zeroOrderExpected(sequence, k):
+	#construct a dictionary of all kmers
+	kmerDict = dict((key, 0 ) for key in enumerateKmers(k))
+	nucleotides = kmerCount(sequence, 1, probability=True)
+
+	# calc expeccted number for each kmer in the dict
 	for kmer in kmerDict.keys():
-		#print 'calculating for ' + kmer
-		#observed count in genome
-		reg =  r'(?=('+kmer+'))'
-		oKmer = float(len(re.findall(reg, sequence)))
-		#print 'observed: ' + str(oKmer)
-		#expected count in sequence
-		#number of each letter in kmer 
 		kA = kmer.count('A')
 		kT = kmer.count('T')
 		kC = kmer.count('C')
 		kG = kmer.count('G')
-		eKmer = (math.pow(eA,kA)*math.pow(eT,kT)*math.pow(eC,kC)*math.pow(eG,kG))*len(sequence)
+		eKmer = (math.pow(nucleotides['A'],kA) * \
+				 math.pow(nucleotides['T'],kT) * \
+				 math.pow(nucleotides['C'],kC) * \
+				 math.pow(nucleotides['G'],kG))* \
+				(len(sequence)-k+1)
 		kmerDict[kmer] = eKmer
 	return kmerDict
 
