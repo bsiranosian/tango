@@ -1,2 +1,0 @@
-Bongo(M1)	/users/bsiranos/projects/phage_fasta/Bongo.fasta
-PegLeg(M1)	/users/bsiranos/projects/phage_fasta/PegLeg.fasta

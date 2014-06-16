@@ -1,2 +1,0 @@
-Marvin(S)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Marvin.fasta
-MosMoris(S)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/MosMoris.fasta

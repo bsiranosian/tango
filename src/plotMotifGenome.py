@@ -46,7 +46,7 @@ def plotMotifGenome(nameFile, motif, windowSize, stepSize, title, saveName, maxN
 		## NEW CODE ## 
 		# add data from counting across RC if RC=True
 		if RC:
-			rc = reverse_complement(sequence)
+			rc = reverseComplement(sequence)
 			f = countMotif(sequence, motif, windowSize, stepSize)
 			r = countMotif(rc, motif, windowSize, stepSize)
 			d = [(a[0],a[1]+b[1]) for a,b in zip(f,r)]

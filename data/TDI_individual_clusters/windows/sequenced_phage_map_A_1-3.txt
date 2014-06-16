@@ -1,3 +1,0 @@
-Abrogate(A1)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Abrogate.fasta
-Adzzy(A2)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Adzzy.fasta
-wAglet(A3)	C:/Users/Admin/Dropbox/College/Junior/Phage Hunters TA/fasta/phage/Aglet.fasta
