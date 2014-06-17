@@ -6,9 +6,9 @@ parser.add_argument("nameFile", action="store", metavar="nameFile", help="The fi
 parser.add_argument("saveName", action="store", metavar="saveName", help="The file to save the resulting nexus to.")
 parser.add_argument("--subset", action="store", metavar="subset", default="False", help="set to True to plot only calculate for the regions defined in the input file. If True, each line must have integers in fields 3 and 4 that represent the genomic region of each phage to compare. This allows you to subset on regions containing genes, etc for each phage.")
 parser.add_argument("--k", action="store", metavar="k", default="4", help="Can also use this to compute 2,3,5-mers, etc.")
-parser.add_argument("--s", action="store", metavar="deviationFile", default=None, help="specify a filename to save resulting usage deviation data to. Be careful because these files can get big for higher values of k!")
-parser.add_argument("--d", action="store", metavar="distanceFile", default=None, help="specify a filename to save resulting distance matrix to")
-parser.add_argument("--r", action="store", metavar="RC", default="True", help="By default sequences are extended by their reverse complement before counting kmers and devation. Set to false to change this behavior.")
+parser.add_argument("--s", action="store", metavar="s", default='', help="specify a filename to save resulting usage deviation data to. Be careful because these files can get big for higher values of k!")
+parser.add_argument("--d", action="store", metavar="d", default='', help="specify a filename to save resulting distance matrix to")
+parser.add_argument("--r", action="store", metavar="r", default="True", help="By default sequences are extended by their reverse complement before counting kmers and devation. Set to false to change this behavior.")
 args=parser.parse_args()
 
 nameFile=args.nameFile
@@ -16,14 +16,19 @@ saveName=args.saveName
 if args.subset == "True": subset=True
 else: subset=False
 k=int(args.k)
-deviationFile = args.deviationFile
-distanceFile = args.distanceFile
+deviationFile = args.s
+distanceFile = args.d
+if args.r == "True": RC=True
+else: RC=False
 
-from tetranucelotideAnalysis import 
-import os
+#### DONE WITH ARGUMENTS | ACTUAL CODE BELOW ####
+
+from tetranucleotideAnalysis import doKmerCount, doZeroOrderExpected, nexusWriter
 from scipy.spatial.distance import pdist
+from collections import OrderedDict 
+import os
 
-def compareTUD(nameFile, saveName, subset, k, s, d):
+def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 	# read information in nameFile
 	names = []
 	fnames = []
@@ -46,26 +51,32 @@ def compareTUD(nameFile, saveName, subset, k, s, d):
 	devDict = dict()
 	if subset:
 		for fname,name,subset in zip(fnames, names, subsets):
-			obs = doKmerCount(fname, k, subset)
+			obs = doKmerCount(fname, k, subset, RC)
 			exp = doZeroOrderExpected(fname, k, subset) 
 			devDict[name] = [float(obs[kmer])/exp[kmer] for kmer in obs.keys()]
 	else:
-		for fname, name in zip(fnames, names)
-			obs = doKmerCount(fname,k)
+		for fname, name in zip(fnames, names):
+			obs = doKmerCount(fname,k, RC)
 			exp = doZeroOrderExpected(fname, k) 
 			devDict[name] = [float(obs[kmer])/exp[kmer] for kmer in obs.keys()]
 
-	# commpute distances 
+	# commpute distances and convert list to a symmetric distance matrix 
 	distances = pdist(devDict.values(), 'euclidean')
-	
+	distanceMat = [[0 for x in range(len(names))] for x in range(len(names))]
+	for i in range(len(names)):
+		for j in range(i+1, len(names)):
+			distanceMat[i][j] = distances[i+j-1]
+			distanceMat[j][i] = distances[i+j-1]
+	for row in distanceMat:
+		print row
 	#done with calculations, start to write data
 	# we always write a nexus file. 
 	if os.path.isfile(saveName):
 		print 'Warning: Nexus file exists and will be overwritten'
-	nexusWriter('d', saveName, data=distances)
+	nexusWriter('d', saveName, dataDict=OrderedDict((name, distance) for (name, distance) in zip(names, distanceMat)))
 
 	# save deviation information if desired
-	if deviationFile != None:
+	if deviationFile != '':
 		if os.path.isfile(saveName):
 			print 'Warning: deviation file exists and will be overwritten'		
 		with open(deviationFile, 'w') as df:
@@ -83,7 +94,7 @@ def compareTUD(nameFile, saveName, subset, k, s, d):
 				df.write(line+'\n')
 
 	# save distance matrix if desired
-	if distanceFile != None:
+	if distanceFile != '':
 		if os.path.isfile(saveName):
 			print 'Warning: distance file exists and will be overwritten'
 		with open(distanceFile, 'w') as df:
@@ -101,3 +112,6 @@ def compareTUD(nameFile, saveName, subset, k, s, d):
 				of.write(toWrite+'\n')
 
 	print 'Done!   :)'
+
+if __name__ == '__main__':
+	compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC)

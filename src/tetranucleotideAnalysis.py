@@ -265,8 +265,8 @@ def doGCcontent(fileName, windowSize, stepSize, plot=False, RC=False):
 # matrix from the file specified in inFile. 
 # Needs testingto ensure comliance with nexus format
 def nexusWriter(mode, outFile, dataDict=None, inFile=None):
-	assert (data!=None or inFile!=None), "You have to specify some kind of input data!"
-	assert mode==='d', "Distance mode is the only valid option for now"
+	assert (dataDict!=None or inFile!=None), "You have to specify some kind of input data!"
+	assert mode=='d', "Distance mode is the only valid option for now"
 	
 	if inFile != None:
 		# read in input data from a matrix for each mode
@@ -278,7 +278,7 @@ def nexusWriter(mode, outFile, dataDict=None, inFile=None):
 				line = tf.readline().strip().split(',')
 				dataDict = dict()
 				while line != ['']:
-					dataDict[line[0] = line[1:]
+					dataDict[line[0]] = line[1:]
 					line = tf.readline().strip().split(',')
 	# otherwise dataDict is already defined and we can move on to writing
 	# write to nexus file 
@@ -286,7 +286,7 @@ def nexusWriter(mode, outFile, dataDict=None, inFile=None):
 		of.write('#NEXUS\n')
 		#write Taxa block
 		of.write('BEGIN TAXA;\n')
-		of.write('DIMENSIONS NTAX=' + str(len(names)) + ';\n')
+		of.write('DIMENSIONS NTAX=' + str(len(dataDict.keys())) + ';\n')
 		taxlabels = 'TAXLABELS'
 		for name in dataDict.keys():
 			taxlabels += ' ' + name
@@ -297,13 +297,20 @@ def nexusWriter(mode, outFile, dataDict=None, inFile=None):
 		if mode == 'd':
 			#write distance block
 			of.write('BEGIN DISTANCES;\n')
-			of.write('\tDIMENSIONS NTAX='+str(len(names))+';\n')
+			of.write('\tDIMENSIONS NTAX='+str(len(dataDict.keys()))+';\n')
 			of.write('\tFORMAT\n') 
 			of.write('\t\tTRIANGLE=BOTH\n')
 			of.write('\t\tDIAGONAL\n')
 			of.write('\t\tLABELS=LEFT\n')
 			of.write('\t;\n')
 			of.write('\tMATRIX\n')
+			for name,distance in zip(dataDict.keys(), dataDict.values()):
+				toWrite = '\t\t'+name
+				for dist in distance:
+					toWrite += ' '+ str(dist)
+				of.write(toWrite+'\n')
+			of.write('\t;\n')
+			of.write('END;\n')
 
 
 #tudToNexus(tudFile, outFile, parseClusters): converts a tab separated TUD file to the nexus format

@@ -122,4 +122,5 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 	print "Done  :)"
 
 # function call
-compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName,maxNum,saveFile)
+if __name__ == '__main__':
+	compareTDI(nameFile, xScale, subset,windowSize,stepSize,k,title,saveName,maxNum,saveFile)

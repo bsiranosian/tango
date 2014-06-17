@@ -1,0 +1,11 @@
+## TESTING TANGO CODE
+
+# test each function of the compareTUD and compareTDI scripts
+
+### compareTUD
+## wtite to nexus file 
+python compareTUD.py .\testing\sequenced_phage_map_A_1-3.txt .\testing\1.nex
+## wite TUD values
+python compareTUD.py .\testing\sequenced_phage_map_A_1-3.txt .\testing\1.nex --s .\testing\1.tud 
+## write distance matrix
+python compareTUD.py .\testing\sequenced_phage_map_A_1-3.txt .\testing\1.nex --d \testing\1.dist
