@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
-from Bio import SeqIO
 import math
 import re
 import numpy as np
+from scipy.spatial.distance import pdist
 
 ## TOOLS FOR THE ANALYSIS OF TETRANUCLEOTIDE USAGE DEVAIATION IN GENOMES
 ## Designed primarily for phage genomes. May not be the fastest way, but it gets things done!
@@ -154,6 +154,17 @@ def zeroOrderExpected(sequence, k):
 		kmerDict[kmer] = eKmer
 	return kmerDict
 
+#doZeroOrderExpected(fileName, k, subset=None): a wrapper for zeroOrderExpected.
+# computes the expected number of kmers given a zero order markov model. Reads from a 
+# single sequence fasta file defined in fileName, computes expected for a given k, returns dict
+# of kemr:expeced. a subset of the sequence can be cosen by specifying two integers in a list with the subset option
+def doZeroOrderExpected(fileName, k, subset=None):
+	sequence = parseFasta(fileName)
+	# append reverse complement if RC=True
+	if subset != None:
+		sequence = sequence[subset[0]:subset[1]]
+	return zeroOrderExpected(sequence, k)
+
 #kmerCount(filename, k, probability=False): computes the number of each kmer in a sequence. 
 # returns a dictionary of kmers as keys and counts as values
 # if probability is true, returns the count/(n-k+1) as values
@@ -171,16 +182,19 @@ def kmerCount(sequence, k, probability=False):
 			kmerDict[key] = float(kmerDict[key])/(len(sequence)-k+1)
 	return kmerDict
 
-#doKmerCount(fileName, k, probability=False, RC=False): calls kmerCount
+#doKmerCount(fileName, k, probability=False, RC=False, subset=None): calls kmerCount
 # on a fasta file containing a single sequence definied in fileName
 # returns a dictionary of kmers as keys and counts as values
 # if probability is true, returns the count/(n-k+1) as values
 # if RC is true, extends the sequcene by the reverse complement before counting
-def doKmerCount(fileName, k, probability=False, RC=False):
+# a subset of the sequence can be cosen by specifying two integers in a list with the subset option
+def doKmerCount(fileName, k, probability=False, RC=False, subset=None):
 	sequence = parseFasta(fileName)
 	# append reverse complement if RC=True
 	if RC:
 		sequence += reverseComplement(sequence)
+	if subset != None:
+		sequence = sequence[subset[0]:subset[1]]
 	return kmerCount(sequence, k, probability)
 
 #doKmerCountWindows: computes kemrCount at sliding windows across the genome. 
@@ -243,11 +257,60 @@ def doGCcontent(fileName, windowSize, stepSize, plot=False, RC=False):
 		plt.show()
 	return gc
 
+#nexusWriter(mode, outFile, dataDict=None, inFile=None): a general purpose function for writing to nexus files.
+# specify a function with the mode option: 'd' is stance mode. A distances block will be written in the 
+# nexus file. 
+# furure modes to add: 'c', write character data to the nexus file, 'b', write both
+# Either takes in data in the format of a dictionary of names:list, or reads in a data 
+# matrix from the file specified in inFile. 
+# Needs testingto ensure comliance with nexus format
+def nexusWriter(mode, outFile, dataDict=None, inFile=None):
+	assert (data!=None or inFile!=None), "You have to specify some kind of input data!"
+	assert mode==='d', "Distance mode is the only valid option for now"
+	
+	if inFile != None:
+		# read in input data from a matrix for each mode
+		if mode =='d':
+			with open(distanceFile, 'r') as tf:
+				# first line is the tab separated names of the tetranucleotides
+				tetraNames = tf.readline().strip().split(',')
+
+				line = tf.readline().strip().split(',')
+				dataDict = dict()
+				while line != ['']:
+					dataDict[line[0] = line[1:]
+					line = tf.readline().strip().split(',')
+	# otherwise dataDict is already defined and we can move on to writing
+	# write to nexus file 
+	with open(outFile, 'w') as of:
+		of.write('#NEXUS\n')
+		#write Taxa block
+		of.write('BEGIN TAXA;\n')
+		of.write('DIMENSIONS NTAX=' + str(len(names)) + ';\n')
+		taxlabels = 'TAXLABELS'
+		for name in dataDict.keys():
+			taxlabels += ' ' + name
+		taxlabels += ';\n'
+		of.write(taxlabels)
+		of.write('END;\n')
+
+		if mode == 'd':
+			#write distance block
+			of.write('BEGIN DISTANCES;\n')
+			of.write('\tDIMENSIONS NTAX='+str(len(names))+';\n')
+			of.write('\tFORMAT\n') 
+			of.write('\t\tTRIANGLE=BOTH\n')
+			of.write('\t\tDIAGONAL\n')
+			of.write('\t\tLABELS=LEFT\n')
+			of.write('\t;\n')
+			of.write('\tMATRIX\n')
+
+
 #tudToNexus(tudFile, outFile, parseClusters): converts a tab separated TUD file to the nexus format
 # each tetranucleotide will be treated as a character. 
 # if parseClusters is True, remove cluster designations that are in parenthases at the end of each label
 # because nexus complains a lot!
-# UNTESTED
+# DEPRECIATED
 def tudToNexus(tudFile, outFile, parseClusters):
 	# read data  
 	with open(tudFile, 'r') as tf:
@@ -299,7 +362,7 @@ def tudToNexus(tudFile, outFile, parseClusters):
 # pairwise distances between each element will be recorded in the distances block
 # if parseClusters is True, remove cluster designations that are in parenthases at the end of each label
 # because nexus complains a lot!
-# UNTESTED
+# DEPRECIATED
 def distanceToNexus(distanceFile, outFile, parseClusters):
 	# read data  
 	with open(distanceFile, 'r') as tf:
@@ -348,11 +411,10 @@ def distanceToNexus(distanceFile, outFile, parseClusters):
 		of.write('\t;\n')
 		of.write('END;\n')
 
-
-
 #converts a tab separated TUD file to the mega format
 # each tetranucleotide will be treated as a character
 # if parseClusters is True, eliminate the cluster designation within parenthases
+# UNTESTED
 def distance_to_mega(distanceFile, outFile, parseClusters):
 	# read data  
 	with open(distanceFile, 'r') as tf:

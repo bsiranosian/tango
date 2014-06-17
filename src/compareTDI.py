@@ -57,18 +57,18 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 				subset = False
 			names.append(line[0])
 			fnames.append(line[1])
+			# parse subset information
 			if subset:
 				subsets.append([line[2],line[3]])
 			line = nf.readline().strip().split(',')
 	# compute for each defined phage
 	data = []
-	kmerList = enumerateKmers(k)	
 	if subset:
 		calcNum=0
 		for fname, name, subset in zip(fnames, named, subsets):
 			if calcNum<maxNum:
 				print "Computing for " + name
-				d = TDI(fname, windowSize, stepSize, k, kmerList, subset=subset)
+				d = TDI(fname, windowSize, stepSize, k,  subset=subset)
 				data.append(d)
 			calcNum+=1
 	else:
@@ -76,7 +76,7 @@ def compareTDI(nameFile, xScale, subset, windowSize, stepSize, k, title, saveNam
 		for fname, name in zip(fnames, names):
 			if calcNum<maxNum:
 				print "Computing for " + name
-				d = TDI(fname, windowSize, stepSize, k, kmerList)
+				d = TDI(fname, windowSize, stepSize, k)
 				data.append(d)
 			calcNum+=1
 	#if xScale, rescale axes and plot on genome position scale
