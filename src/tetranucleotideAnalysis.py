@@ -158,9 +158,11 @@ def zeroOrderExpected(sequence, k):
 # computes the expected number of kmers given a zero order markov model. Reads from a 
 # single sequence fasta file defined in fileName, computes expected for a given k, returns dict
 # of kemr:expeced. a subset of the sequence can be cosen by specifying two integers in a list with the subset option
-def doZeroOrderExpected(fileName, k, subset=None):
+def doZeroOrderExpected(fileName, k, subset=None, RC=False):
 	sequence = parseFasta(fileName)
 	# append reverse complement if RC=True
+	if RC:
+		sequence += reverseComplement(sequence)
 	if subset != None:
 		sequence = sequence[subset[0]:subset[1]]
 	return zeroOrderExpected(sequence, k)

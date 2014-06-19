@@ -56,19 +56,24 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 			devDict[name] = [float(obs[kmer])/exp[kmer] for kmer in obs.keys()]
 	else:
 		for fname, name in zip(fnames, names):
-			obs = doKmerCount(fname,k, RC)
-			exp = doZeroOrderExpected(fname, k) 
+			obs = doKmerCount(fname,k, RC=RC)
+			exp = doZeroOrderExpected(fname, k, RC=RC) 
 			devDict[name] = [float(obs[kmer])/exp[kmer] for kmer in obs.keys()]
 
 	# commpute distances and convert list to a symmetric distance matrix 
-	distances = pdist(devDict.values(), 'euclidean')
+	# have to make sure order of names is preserved
+	toDist = []
+	for name in names:
+		toDist.append(devDict[name])
+	distances = pdist(toDist, 'euclidean')
 	distanceMat = [[0 for x in range(len(names))] for x in range(len(names))]
+	count = 0
 	for i in range(len(names)):
 		for j in range(i+1, len(names)):
-			distanceMat[i][j] = distances[i+j-1]
-			distanceMat[j][i] = distances[i+j-1]
-	for row in distanceMat:
-		print row
+			distanceMat[i][j] = distances[count]
+			distanceMat[j][i] = distances[count]
+			count+=1
+
 	#done with calculations, start to write data
 	# we always write a nexus file. 
 	if os.path.isfile(saveName):
@@ -83,8 +88,8 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 			# wrtie names of kmers on first line
 			kmerLine = '' 
 			for kmer in obs.keys():
-				kmerLine += ',' + kmer
-			df.write(kmerLine + '\n')
+				kmerLine += kmer + ','
+			df.write(kmerLine[:-1] + '\n')
 
 			# write line for each phage
 			for (name, deviations) in devDict.items():
@@ -101,15 +106,15 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 			# write names on first line
 			nameLine = ''
 			for name in names:
-				nameLine += ',' + name
-			df.write(nameLine+'\n')
+				nameLine += name +','
+			df.write(nameLine[:-1]+'\n')
 
 			# write each line of distance matrix
-			for name,distances in zip(names, distances):
+			for name,distances in zip(names, distanceMat):
 				toWrite = name
 				for distance in distances:
 					toWrite += ',' + str(distance)
-				of.write(toWrite+'\n')
+				df.write(toWrite+'\n')
 
 	print 'Done!   :)'
 
