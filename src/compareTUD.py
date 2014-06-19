@@ -2,8 +2,8 @@
 import argparse
 
 parser = argparse.ArgumentParser(description="This script calculates Tetranucleotide Usage Deviation (TUD) for multiple phage genomes. Originally it could only do 4-mers, but has now been generalized to all nucleotide lengths. The defualt function of this script is to save a nexus distance file that can be used for tree buliding with splitstree and other programs. Be aware that the nexus format is picky about special characters in the names of dataa, like parenthases. If you want to specify a cluster as part of the name, use a dash (ie \"Dante-F1\") The only required inputs are the location of a configuration file and location to save the resulting nexus distance file. The configuration file is a comma separated file of phage info with 2 necessary fields and 2 optional fields: \n name,fastaPath,subsetStart,subsetEnd\nEach phage to be compared should be separated by a new line. Additional arguments provide more control over the configuration the underlying calculations. If you want to save a csv file of the resulting usage deviation data, specify one with the --s option. A distance matrix can be saved by specifying a file name with the --d option.")
-parser.add_argument("nameFile", action="store", metavar="nameFile", help="The file name of the comma separated file defining phage information. The name and fastaPath fields are optional, subsets can be defined with integers in the next two fields.")
-parser.add_argument("saveName", action="store", metavar="saveName", help="The file to save the resulting nexus to.")
+parser.add_argument("nameFile", action="store", metavar="nameFile", help="The file name of the comma separated file defining phage information. The name and fastaPath fields are required, subsets can be defined with integers in the next two fields.")
+parser.add_argument("nexusFile", action="store", metavar="nexusFile", help="The file to save the resulting nexus to.")
 parser.add_argument("--subset", action="store", metavar="subset", default="False", help="set to True to plot only calculate for the regions defined in the input file. If True, each line must have integers in fields 3 and 4 that represent the genomic region of each phage to compare. This allows you to subset on regions containing genes, etc for each phage.")
 parser.add_argument("--k", action="store", metavar="k", default="4", help="Can also use this to compute 2,3,5-mers, etc.")
 parser.add_argument("--s", action="store", metavar="s", default='', help="specify a filename to save resulting usage deviation data to. Be careful because these files can get big for higher values of k!")
@@ -12,7 +12,7 @@ parser.add_argument("--r", action="store", metavar="r", default="True", help="By
 args=parser.parse_args()
 
 nameFile=args.nameFile
-saveName=args.saveName
+nexusFile=args.nexusFile
 if args.subset == "True": subset=True
 else: subset=False
 k=int(args.k)
@@ -28,7 +28,7 @@ from scipy.spatial.distance import pdist
 from collections import OrderedDict 
 import os
 
-def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
+def compareTUD(nameFile, nexusFile, subset, k, deviationFile, distanceFile, RC):
 	# read information in nameFile
 	names = []
 	fnames = []
@@ -76,13 +76,13 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 
 	#done with calculations, start to write data
 	# we always write a nexus file. 
-	if os.path.isfile(saveName):
+	if os.path.isfile(nexusFile):
 		print 'Warning: Nexus file exists and will be overwritten'
-	nexusWriter('d', saveName, dataDict=OrderedDict((name, distance) for (name, distance) in zip(names, distanceMat)))
+	nexusWriter('d', nexusFile, dataDict=OrderedDict((name, distance) for (name, distance) in zip(names, distanceMat)))
 
 	# save deviation information if desired
 	if deviationFile != '':
-		if os.path.isfile(saveName):
+		if os.path.isfile(deviationFile):
 			print 'Warning: deviation file exists and will be overwritten'		
 		with open(deviationFile, 'w') as df:
 			# wrtie names of kmers on first line
@@ -100,7 +100,7 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 
 	# save distance matrix if desired
 	if distanceFile != '':
-		if os.path.isfile(saveName):
+		if os.path.isfile(distanceFile):
 			print 'Warning: distance file exists and will be overwritten'
 		with open(distanceFile, 'w') as df:
 			# write names on first line
@@ -119,4 +119,4 @@ def compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC):
 	print 'Done!   :)'
 
 if __name__ == '__main__':
-	compareTUD(nameFile, saveName, subset, k, deviationFile, distanceFile, RC)
+	compareTUD(nameFile, nexusFile, subset, k, deviationFile, distanceFile, RC)

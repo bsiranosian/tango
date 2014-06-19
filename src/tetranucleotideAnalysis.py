@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import math
-import re
 import numpy as np
 from scipy.spatial.distance import pdist
 
@@ -68,8 +67,9 @@ def enumerateKmers(k):
 # if subset is defined, only return information about the sequence between the two positions. 
 def TDI(sequence, windowSize, stepSize, k):
 	#get TUD dict to use in TDI comparison
-	tudDict = TUDFromString(sequence,k,kmerList)
-
+	obs = kmerCount(sequence,k)
+	exp = zeroOrderExpected(sequence, k) 
+	tudDict = {kmer:float(obs[kmer])/exp[kmer] for kmer in obs.keys()}
 	# slide along the genome in windows defined by windowSize with steps defined by stepSize
 	start = 0
 	end = windowSize
@@ -89,7 +89,7 @@ def TDI(sequence, windowSize, stepSize, k):
 
 		#compute difference sum for all kmers
 		differenceSum = 0
-		for kmer in kmerList:
+		for kmer in obs.keys():
 			differenceSum += abs((obs[kmer]/exp[kmer])-tudDict[kmer])
 		differencesWindows.append(differenceSum)
 
@@ -114,21 +114,16 @@ def TDI(sequence, windowSize, stepSize, k):
 # can extract a subset of the sequence by passing a list of two integers to subset
 # if plot=True, plots an example graph to the graphics device
 # returns [xaxis positions, zscores]
-def doTDI(fileName, windowSize, stepSize, k, subset=None, plot=False):
+def doTDI(fileName, windowSize, stepSize, k, subset=False):
 	#parse fasta from fileName
 	sequence = parseFasta(fileName)
 	# pick out part defined in subset
-	if subset != None:
+	if subset != False:
 		sequence = sequence[subset[0]:subset[1]]
 
 	#do TDI calculation
 	tdi = TDI(sequence,windowSize,stepSize,k)
 
-	# PLOT SHIT
-	if plot:
-		plt.plot(tdi[0], tdi[1], lw=1)
-		# ADD INFORMATION TO AXES, ETC
-		plt.show()
 	return [tdi[0],tdi[1]]
 
 
@@ -253,6 +248,7 @@ def doGCcontent(fileName, windowSize, stepSize, plot=False, RC=False):
 	#do calc
 	gc = GCcontent(sequence, windowSize, stepSize)
 	if plot:
+		import matplotlib.pyplot as plt
 		plt.plot(gc[1],gc[0])
 		plt.xlabel('genomic position')
 		plt.ylabel('GC fraction')
