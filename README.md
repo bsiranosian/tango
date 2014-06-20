@@ -1,25 +1,152 @@
-tango
+Tango: alignment-free analysis of mycobacteriophage genomes
 =====
 
-Code, data and figures for the analysis of tetranucleotide usage in mycobacteriophages, designed by the Phage Hunters class at Brown University, Spring 2014. 
+This repository contains all the code, data, figures and results for the alignment-free sequence analysis project of the Brown University 2014 Phage Hunters class. 
 
-Apologies for the pixels, things got a little insane the last couple days before the conference
+##Try it for yourself!
+We've published two main scripts to analyze kmer usage in mycobacteriphage genomes. With these you can reconstruct the main results from our poster and presentation: a nexus file of distances between phage that can be used to build a neighbor joining phylogenetic tree and plots of genomic self-similarity in a sliding window that can be used to look for horizontal gene transfer. 
 
-directories
------------
+To use these scripts, you need to have python 2.7 installed on your system, as well as the following packages:
+
+- numpy --  _for some tricky math_
+- scipy --  _for efficient calculation of distance matrices_
+- matplotlib --  _if you chose to produce plots with the compareTDI script_
+
+The actual scripts are contained within the _kmer\_analysis_ folder. 
+
+_compareTUD.py_ is used to calculate the kmer usage deviation across a number of phage. The default output is a nexus file containing the distances between phage that can be used in a program like splitstree. It can also output raw usage deviation values and a raw distance matrix.
+
+_comparreTDI.py_ calculates genomic self-similarity in a sliding window across the genome for a number of phage. The default output is a file containing the z-scored deviation for each window in each phage. It can also produce a plot of the z-score across each genome for quick comparisons. 
+
+###configuration files
+The first argument to each script is a comma separated configuration file that contains at least the name and fasta file location for each phage that is going to be  compared. Each phage should be defined on a separate line. The format is as follows: 
+
+    name,fasta location,(optional) subset start, (optional) subset end
+For an example configuration file that has the names of the 60 phage used in Graham Hatfull's 2010 comparative phage genomics paper, look at _kmer\_analysis\\examples\\fasta\_map\_Hatfull60.txt_. Note that locations defined in this file are specific to my computer and will have to be changed. Fields 3 and 4 can be used to specify a subset of the seqence to be compared with start and end coordinates (zero indexed). 
+
+###compareTUD.py
+Your command prompt must be in the _kmer\_analysis_ folder to use this script, as I haven't made it into an installable package yet.
+ 
+	minimal usage: python compareTUD.py fastaMap nexusFile
+
+Where _fastaMap_ is the location of the configuration file and _nexusFile_ is the desired output location. 
+ 
+	detailed usage: compareTUD.py [-h] [--subset subset] [--k k] [--s s] [--d d] [--r r]
+                    fastaMap nexusFile
+
+    This script calculates Tetranucleotide Usage Deviation (TUD) for multiple
+    phage genomes. Originally it could only do 4-mers, but has now been
+    generalized to all nucleotide lengths. The defualt function of this script is
+    to save a nexus distance file that can be used for tree buliding with
+    splitstree and other programs. Be aware that the nexus format is picky about
+    special characters in the names of dataa, like parenthases. If you want to
+    specify a cluster as part of the name, use a dash (ie "Dante-F1") The only
+    required inputs are the location of a configuration file and location to save
+    the resulting nexus distance file. The configuration file is a comma separated
+    file of phage info with 2 necessary fields and 2 optional fields:
+    name,fastaPath,subsetStart,subsetEnd Each phage to be compared should be
+    separated by a new line. Additional arguments provide more control over the
+    configuration the underlying calculations. If you want to save a csv file of
+    the resulting usage deviation data, specify one with the --s option. A
+    distance matrix can be saved by specifying a file name with the --d option.
+
+    positional arguments:
+      fastaMap         The file name of the comma separated file defining phage
+                       information. The name and fastaPath fields are required,
+                       subsets can be defined with integers in the next two
+                       fields.
+      nexusFile        The file to save the resulting nexus to.
+
+    optional arguments:
+      -h, --help       show this help message and exit
+      --subset subset  set to True to plot only calculate for the regions defined
+                       in the input file. If True, each line must have integers in
+                       fields 3 and 4 that represent the genomic region of each
+                       phage to compare. This allows you to subset on regions
+                       containing genes, etc for each phage.
+      --k k            Can also use this to compute 2,3,5-mers, etc.
+      --s s            specify a filename to save resulting usage deviation data
+                       to. Be careful because these files can get big for higher
+                       values of k!
+      --d d            specify a filename to save resulting distance matrix to
+      --r r            By default sequences are extended by their reverse
+                       complement before counting kmers and devation. Set to false
+                       to change this behavior.
+
+###compareTDI.py
+Your command prompt must be in the _kmer\_analysis_ folder to use this script, as I haven't made it into an installable package yet.
+ 
+	minimal usage: python compareTUD.py fastaMap saveFile
+
+Where _fastaMap_ is the location of the configuration file and _nexusFile_ is the desired output location for comma separated deviation data.
+
+    detailed usage: compareTDI.py [-h] [--subset subset] [--windowSize windowSize]
+                    [--stepSize stepSize] [--k k] [--plotFile plotFile]
+                    [--title title] [--maxNum maxNum] [--xScale xScale]
+                    fastaMap saveFile
+
+    This script computes the Tetranucleotide Difference Index (TDI) plot for
+    multiple phage genomes. Originally it could only do 4-mers, but has now been
+    generalized to all nucleotide lengths. The only required inputs are the file
+    name of a configuration file and a file name to save the resulting data. The
+    configuration file is a comma separated file of phage info with 2 necessary
+    fields and 2 optional fields: name,fastaPath,subsetStart,subsetEnd Each phage
+    to be compared should be separated by a new line. To save a simple plot of the
+    resulting TDI Z-score across the genome, specify a file with the --plotFile
+    option. You will need to have the matplotlib library available for import to
+    use this option. Additional arguments provide more control over the
+    configuration of the underlying calculations and the plot.
+
+    positional arguments:
+      fastaMap              The file name of the comma separated file defining
+                            phage information. The name and fastaPath fields are
+                            required, subsets can be defined with integers in the
+                            next two fields.
+      saveFile              specify a filename to save resulting data to. Format
+                            will be CSV with the first row representing the start
+                            of each window. Data for each phage will be plottd on
+                            a new line. Z-scores for each window are the values in
+                            the file.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --subset subset       set to True to plot only the regions defined in the
+                            input file. If True, each line must have integers in
+                            fields 3 and 4 that represent the genomic region of
+                            each phage to compare
+      --windowSize windowSize
+                            The size of the window to compute TDI within. Default
+                            of 5000bp is used in Pride et. al 2006
+      --stepSize stepSize   How many bases to move the window along the genome at
+                            each iteration. Default of 1000bp is used in Pride et.
+                            al 2006
+      --k k                 Can also use this to compute 2,3,5-mers, etc.
+      --plotFile plotFile   The file to save the resulting image to.
+      --title title         The title for the resulting plot.
+      --maxNum maxNum       maximum number of phage to plot on the same figure.
+                            first maxNum of input file will be chosen. default: 10
+      --xScale xScale       Set to True to scale the x axis of the plot to
+                            relative genome position. 
+
+
+##Directories 
+- *kmer_analysis* has the scripts that users should interact with
 - *data* contains input/output data
-- *src* contains sourcecode
-- *figures* contains pretty pictures
-- *presentation* contains files for the presentation
-- *writing* contains pretty abstract prose.  and paper stuff eventually too
+- *src* contains code that is still in development and not ready for release. Lots of ideas and bugs here. Enter if you dare!
+- *figures* contains pretty pictures, most of which are just automated outputs from scripts. 
+- *presentation* contains files for the presentation. Chen has a writeup of his presentation procedure on his [website](http://yeesus.com/tangoSEA/).
+- *writing* contains pretty abstract prose. And paper stuff eventually too.
 
-changelog
----------
+##Changelog
+
+_2014-06-20_
+Getting ready for the alpha release! Spicing up this readme... organizing files, explaining how people can interact with the two main scripts
+
 _2014-06-16_
 The second coming.  
 
 _2014-06-15—2014-04-18_
-Jeez I have no idea.  Review the commit log.  Actually please don't.  
+Jeez I have no idea.  Review the commit log.  Actually please don't. 
 
 _2014-04-17_
 Added inital code for TUD calculation and figure generation. Two output files are created from the data in the Hatfull et. al 2010 comparative phage genomics paper. This subset of phages will be used for inital tests of our algorithms. 

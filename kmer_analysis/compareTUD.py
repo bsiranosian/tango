@@ -2,7 +2,7 @@
 import argparse
 
 parser = argparse.ArgumentParser(description="This script calculates Tetranucleotide Usage Deviation (TUD) for multiple phage genomes. Originally it could only do 4-mers, but has now been generalized to all nucleotide lengths. The defualt function of this script is to save a nexus distance file that can be used for tree buliding with splitstree and other programs. Be aware that the nexus format is picky about special characters in the names of dataa, like parenthases. If you want to specify a cluster as part of the name, use a dash (ie \"Dante-F1\") The only required inputs are the location of a configuration file and location to save the resulting nexus distance file. The configuration file is a comma separated file of phage info with 2 necessary fields and 2 optional fields: \n name,fastaPath,subsetStart,subsetEnd\nEach phage to be compared should be separated by a new line. Additional arguments provide more control over the configuration the underlying calculations. If you want to save a csv file of the resulting usage deviation data, specify one with the --s option. A distance matrix can be saved by specifying a file name with the --d option.")
-parser.add_argument("nameFile", action="store", metavar="nameFile", help="The file name of the comma separated file defining phage information. The name and fastaPath fields are required, subsets can be defined with integers in the next two fields.")
+parser.add_argument("fastaMap", action="store", metavar="fastaMap", help="The file name of the comma separated file defining phage information. The name and fastaPath fields are required, subsets can be defined with integers in the next two fields.")
 parser.add_argument("nexusFile", action="store", metavar="nexusFile", help="The file to save the resulting nexus to.")
 parser.add_argument("--subset", action="store", metavar="subset", default="False", help="set to True to plot only calculate for the regions defined in the input file. If True, each line must have integers in fields 3 and 4 that represent the genomic region of each phage to compare. This allows you to subset on regions containing genes, etc for each phage.")
 parser.add_argument("--k", action="store", metavar="k", default="4", help="Can also use this to compute 2,3,5-mers, etc.")
@@ -11,7 +11,7 @@ parser.add_argument("--d", action="store", metavar="d", default='', help="specif
 parser.add_argument("--r", action="store", metavar="r", default="True", help="By default sequences are extended by their reverse complement before counting kmers and devation. Set to false to change this behavior.")
 args=parser.parse_args()
 
-nameFile=args.nameFile
+fastaMap=args.fastaMap
 nexusFile=args.nexusFile
 if args.subset == "True": subset=True
 else: subset=False
@@ -23,17 +23,17 @@ else: RC=False
 
 #### DONE WITH ARGUMENTS | ACTUAL CODE BELOW ####
 
-from tetranucleotideAnalysis import doKmerCount, doZeroOrderExpected, nexusWriter
+from kmerAnalysis import doKmerCount, doZeroOrderExpected, nexusWriter
 from scipy.spatial.distance import pdist
 from collections import OrderedDict 
 import os
 
-def compareTUD(nameFile, nexusFile, subset, k, deviationFile, distanceFile, RC):
-	# read information in nameFile
+def compareTUD(fastaMap, nexusFile, subset, k, deviationFile, distanceFile, RC):
+	# read information in fastaMap
 	names = []
 	fnames = []
 	subsets = []
-	with open(nameFile, 'r') as nf:
+	with open(fastaMap, 'r') as nf:
 		line = nf.readline().strip().split(',')
 		while line != ['']:
 			if subset and (len(line) < 4):
@@ -119,4 +119,4 @@ def compareTUD(nameFile, nexusFile, subset, k, deviationFile, distanceFile, RC):
 	print 'Done!   :)'
 
 if __name__ == '__main__':
-	compareTUD(nameFile, nexusFile, subset, k, deviationFile, distanceFile, RC)
+	compareTUD(fastaMap, nexusFile, subset, k, deviationFile, distanceFile, RC)
