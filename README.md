@@ -42,10 +42,10 @@ Where _fastaMap_ is the location of the configuration file and _nexusFile_ is th
 
     This script calculates Tetranucleotide Usage Deviation (TUD) for multiple
     phage genomes. Originally it could only do 4-mers, but has now been
-    generalized to all nucleotide lengths. The defualt function of this script is
-    to save a nexus distance file that can be used for tree buliding with
+    generalized to all nucleotide lengths. The default function of this script is
+    to save a nexus distance file that can be used for tree building with
     splitstree and other programs. Be aware that the nexus format is picky about
-    special characters in the names of dataa, like parenthases. If you want to
+    special characters in the names of data, like parentheses. If you want to
     specify a cluster as part of the name, use a dash (ie "Dante-F1") The only
     required inputs are the location of a configuration file and location to save
     the resulting nexus distance file. The configuration file is a comma separated
