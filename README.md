@@ -4,13 +4,19 @@ Tango: alignment-free analysis of mycobacteriophage genomes
 This repository contains all the code, data, figures and results for the alignment-free sequence analysis project of the Brown University 2014 Phage Hunters class. 
 
 ##Try it for yourself!
+###Quick setup
+1. Install [Anaconda](http://continuum.io/downloads) (which includes Python, scipy, numpy, and matplotlib, dependencies you'll want)
+2. [Download](https://github.com/bsiranosian/tango/archive/analysis-only.zip) our scripts—or [download everything](https://github.com/bsiranosian/tango/archive/master.zip) instead.  
+3. Jump to [configuration files](https://github.com/bsiranosian/tango/blob/master/README.md#configuration-files) for instructions on running the scripts.  
+
+###Detailed installation instructions
 We've published two main scripts to analyze kmer usage in mycobacteriphage genomes. With these you can reconstruct the main results from our poster and presentation: a nexus file of distances between phage that can be used to build a neighbor joining phylogenetic tree and plots of genomic self-similarity in a sliding window that can be used to look for horizontal gene transfer. 
 
-To use these scripts, you need to have python 2.7 installed on your system, as well as the following packages:
+To use these scripts, you need to have [python 2.7](https://www.python.org/downloads/) installed on your system, as well as the following packages:
 
-- numpy --  _for some tricky math_
-- scipy --  _for efficient calculation of distance matrices_
-- matplotlib --  _if you chose to produce plots with the compareTDI script_
+- [scipy](http://www.scipy.org/install.html) --  _for efficient calculation of distance matrices_
+- [numpy](http://www.numpy.org/) --  _for some tricky math (comes with scipy)_
+- [matplotlib](http://matplotlib.org/downloads.html) --  _if you chose to produce plots with the compareTDI script_
 
 The actual scripts are contained within the _kmer\_analysis_ folder. 
 
@@ -36,10 +42,10 @@ Where _fastaMap_ is the location of the configuration file and _nexusFile_ is th
 
     This script calculates Tetranucleotide Usage Deviation (TUD) for multiple
     phage genomes. Originally it could only do 4-mers, but has now been
-    generalized to all nucleotide lengths. The defualt function of this script is
-    to save a nexus distance file that can be used for tree buliding with
+    generalized to all nucleotide lengths. The default function of this script is
+    to save a nexus distance file that can be used for tree building with
     splitstree and other programs. Be aware that the nexus format is picky about
-    special characters in the names of dataa, like parenthases. If you want to
+    special characters in the names of data, like parentheses. If you want to
     specify a cluster as part of the name, use a dash (ie "Dante-F1") The only
     required inputs are the location of a configuration file and location to save
     the resulting nexus distance file. The configuration file is a comma separated
