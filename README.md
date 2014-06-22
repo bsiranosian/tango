@@ -24,6 +24,8 @@ _compareTUD.py_ is used to calculate the kmer usage deviation across a number of
 
 _comparreTDI.py_ calculates genomic self-similarity in a sliding window across the genome for a number of phage. The default output is a file containing the z-scored deviation for each window in each phage. It can also produce a plot of the z-score across each genome for quick comparisons. 
 
+_fastaDownloader.py_ is an accessory script used to download all the genomes from phagesdb.org. We've included the database of mycobacteriophage fasta files as of 2014-06-20 in this repo, but you can download them again or keep the folder up to date with this script.
+
 ###configuration files
 The first argument to each script is a comma separated configuration file that contains at least the name and fasta file location for each phage that is going to be  compared. Each phage should be defined on a separate line. The format is as follows: 
 
@@ -133,6 +135,51 @@ Where _fastaMap_ is the location of the configuration file and _nexusFile_ is th
                             first maxNum of input file will be chosen. default: 10
       --xScale xScale       Set to True to scale the x axis of the plot to
                             relative genome position. 
+
+###fastaDownloader.py
+This script takes in a tab delimited list of phage names and possibly clusters and gets fasta files from phagesdb.org for each one. We recommend using the "simple data download" from phagesdb to get this name information, available [here](http://phagesdb.org/data/?set=seq&type=simple). Beware that sometimes the names in this file don't correspond to the names of the fasta files on the database - sometimes there are small changes in capitalization and etc. We've taken this in to account for the current database, but the names of any failed downloads will be written to a _badNames.txt_ file in the output folder. 
+	
+	minimal usasge: python fastaDownloader.py phageData saveFolder
+
+By default, the script reads in phage names from the file defined in phageData and saves resulting output files to saveFolder. To include the cluster names in the saved files, see the --parseClusters option in detailed usage.
+
+
+	detailed usage: fastaDownloader.py [-h] [--parseClusters parseClusters]
+    		                           [--header header]
+             		                   phageData saveFolder
+
+    This script is used to download fasta sequences from phagesdb.org. It takes as
+    input a list of phage names downloaded from phagesdb.org and gets the
+    corresponding fasta files from http://phagesdb.org/media/fastas/name.fasta.
+    Sometimes, the names provided in the phagesdb data download file don't
+    accurately match the names on the website. In this case, a file called
+    "bad_names.txt" will be placed in the output directory describing the phage
+    names that refused to download. All resulting files will be stored in the
+    specified directory. Additional options can be used to include the name of the
+    phage cluster in the filename.
+
+    positional arguments:
+      phageData             The file name of tab delimited phage data. We
+                            recommend using the file downloaded from
+                            http://phagesdb.org/data/?set=seq&type=simple. Each
+                            phage must be defined on a new line. The first field
+                            must contain the name of the phage (and therefore the
+                            name of the fasta file on the website). The second
+                            field optionally contains the phage cluster that can
+                            be included in the saved file name with the
+                            --parseClusters option
+      saveFolder            All resulting files will be placed here. Will be
+                            created if it does not exist.
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --parseClusters parseClusters
+                            Set to a character to have the phage cluster included
+                            in the file name following this character. For
+                            example, using "-" will save the resulting fasta as
+                            "224-E.fasta"
+      --header header       Number of lines to skip while reading phageData.
+                            Change this only if you have a custom file
 
 
 ##Directories 
