@@ -1,4 +1,36 @@
 # doing Naive Bayes on tetranucleotide probabilities with multinomial distributions. 
+# NEW CODE 2014-07-01
+setwd("~/GitHub/tango")
+#read phage names and clusters, tetranucleotides for all
+phageData <- as.data.frame(read.table('kmer_analysis/examples/PhagesDB_Data.txt',skip=1))
+allK4 <- as.matrix(read.table('data/kmer_counts/all_phage/all_freq_k4.csv',sep=',',header=T))
+allK4p <- allK4 / rowSums(allK4)
+
+# try for a cluster O - catdawg
+baseName = 'data/kmer_counts/indiviudal_windows/'
+ending = '_500_250_k4.csv'
+
+catdawg = as.matrix(read.table(paste(baseName, 'Catdawg-O', ending, sep=''), sep=',', header=T))
+selfSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Catdawg-O',], log=T))
+plot(1:288, selfSimilarity, type='o')
+plot(250:288, selfSimilarity[250:288], type='o')
+
+#self similarity is lowest in window 4000:4500
+compare4k <- sort(apply(allK4p, 1, function(x) dmultinom(windows['4000:4500',], prob=x, log=T)), decreasing=T)
+
+#patience-U has high similarity with window 4000:4500. look for similarity across this 
+patienceSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Patience-U',], log=T))
+
+plot(1:50, selfSimilarity[1:50], type='o')
+lines(patienceSimilarity[1:50], col='red', type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Gaia-Singleton',], log=T))[1:50], col='blue',type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Hawkeye-D2',], log=T))[1:50], col='green',type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Nilo-R',], log=T))[1:50], col='orange',type='o')
+
+#look at patience?
+patience = as.matrix(read.table(paste(baseName, 'Patience-U', ending, sep=''), sep=',', header=T))
+plot(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Patience-U',], log=T))[210:240],type='o')
+
 # NEW CODE 2014-05-18
 # calclulations similar to TDI. In sliding window, get probability sequence came from cluster. 
 #get phage data 

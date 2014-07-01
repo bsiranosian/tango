@@ -196,7 +196,7 @@ def doKmerCount(fileName, k, probability=False, RC=False, subset=None):
 
 #doKmerCountWindows: computes kemrCount at sliding windows across the genome. 
 # returns (list of dictionaries one for each window, list of window start and end positions)
-def doKmerCountWindows(filename, k, windowSize, stepSize, probability=False):
+def doKmerCountWindows(fileName, k, windowSize, stepSize, probability=False):
 	kmerList = enumerateKmers(k)
 	#parse fasta from filename
 	sequence = parseFasta(fileName)
