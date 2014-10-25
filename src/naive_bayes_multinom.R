@@ -3,33 +3,39 @@
 setwd("~/GitHub/tango")
 #read phage names and clusters, tetranucleotides for all
 phageData <- as.data.frame(read.table('kmer_analysis/examples/PhagesDB_Data.txt',skip=1))
-allK4 <- as.matrix(read.table('data/kmer_counts/all_phage/all_freq_k4.csv',sep=',',header=T))
-allK4p <- allK4 / rowSums(allK4)
+k4_all <- as.matrix(read.table('data/kmer_counts/663_phage/reverse_complement/663_freq_k4.csv',sep=',',header=T))
+
+# we now want to remove palindromes from the data becasue we're working with RC counted
+unique <- c('AAAA', 'AAAT', 'AAAC', 'AAAG', 'AATA', 'AATT', 'AATC', 'AATG', 'AACA', 'AACT', 'AACC', 'AACG', 'AAGA', 'AAGT', 'AAGC', 'AAGG', 'ATAA', 'ATAT', 'ATAC', 'ATAG', 'ATTA', 'ATTC', 'ATTG', 'ATCA', 'ATCT', 'ATCC', 'ATCG', 'ATGA', 'ATGT', 'ATGC', 'ATGG', 'ACAA', 'ACAC', 'ACAG', 'ACTA', 'ACTC', 'ACTG', 'ACCA', 'ACCT', 'ACCC', 'ACCG', 'ACGA', 'ACGT', 'ACGC', 'ACGG', 'AGAA', 'AGAC', 'AGAG', 'AGTA', 'AGTC', 'AGTG', 'AGCA', 'AGCT', 'AGCC', 'AGCG', 'AGGA', 'AGGC', 'AGGG', 'TAAA', 'TAAC', 'TAAG', 'TATA', 'TATC', 'TATG', 'TACA', 'TACC', 'TACG', 'TAGA', 'TAGC', 'TAGG', 'TTAA', 'TTAC', 'TTAG', 'TTTC', 'TTTG', 'TTCA', 'TTCC', 'TTCG', 'TTGA', 'TTGC', 'TTGG', 'TCAC', 'TCAG', 'TCTC', 'TCTG', 'TCCA', 'TCCC', 'TCCG', 'TCGA', 'TCGC', 'TCGG', 'TGAC', 'TGAG', 'TGTC', 'TGTG', 'TGCA', 'TGCC', 'TGCG', 'TGGC', 'TGGG', 'CAAC', 'CAAG', 'CATC', 'CATG', 'CACC', 'CACG', 'CAGC', 'CAGG', 'CTAC', 'CTAG', 'CTTC', 'CTCC', 'CTCG', 'CTGC', 'CTGG', 'CCAC', 'CCTC', 'CCCC', 'CCCG', 'CCGC', 'CCGG', 'CGAC', 'CGTC', 'CGCC', 'CGCG', 'CGGC', 'GAAC', 'GATC', 'GACC', 'GAGC', 'GTAC', 'GTCC', 'GTGC', 'GCCC', 'GCGC', 'GGCC')
+k4 <- k4_all[, unique]
+
+#probabilities
+k4p <- k4 / rowSums(k4)
 
 # try for a cluster O - catdawg
 baseName = 'data/kmer_counts/indiviudal_windows/'
 ending = '_500_250_k4.csv'
 
 catdawg = as.matrix(read.table(paste(baseName, 'Catdawg-O', ending, sep=''), sep=',', header=T))
-selfSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Catdawg-O',], log=T))
+selfSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Catdawg-O',], log=T))
 plot(1:288, selfSimilarity, type='o')
 plot(250:288, selfSimilarity[250:288], type='o')
 
 #self similarity is lowest in window 4000:4500
-compare4k <- sort(apply(allK4p, 1, function(x) dmultinom(windows['4000:4500',], prob=x, log=T)), decreasing=T)
+compare4k <- sort(apply(allk4p, 1, function(x) dmultinom(windows['4000:4500',], prob=x, log=T)), decreasing=T)
 
 #patience-U has high similarity with window 4000:4500. look for similarity across this 
-patienceSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Patience-U',], log=T))
+patienceSimilarity <- apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Patience-U',], log=T))
 
 plot(1:50, selfSimilarity[1:50], type='o')
 lines(patienceSimilarity[1:50], col='red', type='o')
-lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Gaia-Singleton',], log=T))[1:50], col='blue',type='o')
-lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Hawkeye-D2',], log=T))[1:50], col='green',type='o')
-lines(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Nilo-R',], log=T))[1:50], col='orange',type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Gaia-Singleton',], log=T))[1:50], col='blue',type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Hawkeye-D2',], log=T))[1:50], col='green',type='o')
+lines(apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Nilo-R',], log=T))[1:50], col='orange',type='o')
 
 #look at patience?
 patience = as.matrix(read.table(paste(baseName, 'Patience-U', ending, sep=''), sep=',', header=T))
-plot(apply(windows, 1, function(x) dmultinom(x,prob=allK4p['Patience-U',], log=T))[210:240],type='o')
+plot(apply(windows, 1, function(x) dmultinom(x,prob=allk4p['Patience-U',], log=T))[210:240],type='o')
 
 # NEW CODE 2014-05-18
 # calclulations similar to TDI. In sliding window, get probability sequence came from cluster. 

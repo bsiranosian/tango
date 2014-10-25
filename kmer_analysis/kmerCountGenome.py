@@ -4,12 +4,13 @@ import sys
 import os
 from kmerAnalysis import doKmerCount
 
-if len(sys.argv) != 4:
-	sys.exit("USAGE: kmerCountWindows.py fastaMap k outFile")
+if len(sys.argv) != 5:
+	sys.exit("USAGE: kmerCountWindows.py fastaMap k outFile rc")
 
 fastaMap = sys.argv[1]
 k = int(sys.argv[2])
 outFile = sys.argv[3]
+rc = sys.argv[4]
 
 # read fasta information
 names=[]
@@ -24,7 +25,7 @@ with open(fastaMap, 'r') as nf:
 with open(outFile, 'w') as of:
 	first = True
 	for name, fname in zip(names, fnames):
-		data = doKmerCount(fname, k)
+		data = doKmerCount(fname, k, RC=rc)
 		if first:
 			# write header of file - names of tetras
 			of.write(','.join(data.keys())+'\n')

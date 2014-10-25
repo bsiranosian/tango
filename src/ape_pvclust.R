@@ -17,7 +17,7 @@ plot(hclust(dist.4.log))
 
 #trying pvclust package
 library(pvclust)
-result <- pvclust(t(dev.4.clusters), method.dist="cor", method.hclust="average", nboot=100)
+result <- pvclust(t(dev.4.clusters), method.dist="cor", method.hclust="average", nboot=10)
 plot(result)
 
 dev.4.subset<- as.matrix(read.table('data/kmer_counts/Hatfull_60_subset/Hatful_60_dev_k4.tsv'))
@@ -25,3 +25,9 @@ res.subset <- pvclust(t(dev.4.subset))
 
 seplot(res.subset, identify=TRUE)
 # 15 29 are high SE
+
+# do again so we have names
+result <- pvclust(t(dev.4), method.dist="cor", method.hclust="average", nboot=2)
+pdf('figures/bootstrap_trees/663_with_names.pdf',width=50, pointsize = 6, height=10)
+plot(result)
+dev.off()

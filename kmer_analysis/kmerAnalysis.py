@@ -162,6 +162,25 @@ def doZeroOrderExpected(fileName, k, subset=None, RC=False):
 		sequence = sequence[subset[0]:subset[1]]
 	return zeroOrderExpected(sequence, k)
 
+#doZeroOrderExpectedWindows: computes zeroOrderExpected at sliding windows across the genome. 
+# (list of dictionaries one for each window, list of window start and end positions)
+def doZeroOrderExpectedWindows(fileName, k, windowSize, stepSize):
+	sequence = parseFasta(fileName)
+	#compute number of windows
+	windows = int(math.ceil(len(sequence)/float(windowSize)))
+	
+	start = 0 
+	end = start+windowSize
+	toReturn = []
+	while end < len(sequence):
+		toReturn.append([zeroOrderExpected(sequence[start:end],k),[start,end]])
+		# get start and end positions
+		start += stepSize
+		end += stepSize
+	# last calc for windows
+	toReturn.append([zeroOrderExpected(sequence[start:end],k),[start,end]])
+	return toReturn
+
 #kmerCount(filename, k, probability=False): computes the number of each kmer in a sequence. 
 # returns a dictionary of kmers as keys and counts as values
 # if probability is true, returns the count/(n-k+1) as values
@@ -194,7 +213,7 @@ def doKmerCount(fileName, k, probability=False, RC=False, subset=None):
 		sequence = sequence[subset[0]:subset[1]]
 	return kmerCount(sequence, k, probability)
 
-#doKmerCountWindows: computes kemrCount at sliding windows across the genome. 
+#doKmerCountWindows: computes kmerCount at sliding windows across the genome. 
 # returns (list of dictionaries one for each window, list of window start and end positions)
 def doKmerCountWindows(fileName, k, windowSize, stepSize, probability=False):
 	kmerList = enumerateKmers(k)
